@@ -14,7 +14,7 @@ export function SiteNav() {
     <header className="relative border-b border-neutral-200">
       <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
         <div className="w-16" />
-        <Link href="/" className="inline-block" onClick={() => setOpen(false)}>
+        <Link href="/menu" className="inline-block" onClick={() => setOpen(false)}>
           <Image
             src="/logo.png"
             alt="t-style Japanisches Bistro"
@@ -52,10 +52,10 @@ export function SiteNav() {
             {CATEGORIES.map((c) => (
               <Link
                 key={c.slug}
-                href={`/${c.slug}`}
+                href={`/menu/${c.slug}`}
                 onClick={() => setOpen(false)}
                 className={
-                  pathname === `/${c.slug}`
+                  pathname === `/menu/${c.slug}`
                     ? "px-4 py-2 text-sm font-medium text-red-600"
                     : "px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50"
                 }

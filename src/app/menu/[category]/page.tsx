@@ -7,7 +7,7 @@ import { DishCard } from "@/components/DishCard";
 export const dynamic = "force-dynamic";
 
 export default async function CategoryPage(
-  props: PageProps<"/[category]">,
+  props: PageProps<"/menu/[category]">,
 ) {
   const { category } = await props.params;
 
