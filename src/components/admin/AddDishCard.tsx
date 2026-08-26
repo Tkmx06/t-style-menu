@@ -18,7 +18,7 @@ export function AddDishCard({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="flex aspect-square w-full flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-neutral-700 text-neutral-400 hover:border-neutral-500 hover:text-neutral-200"
+        className="flex aspect-square w-full flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-neutral-300 text-neutral-400 hover:border-neutral-400 hover:text-neutral-600"
       >
         <span className="text-3xl">+</span>
         <span className="text-sm">料理を追加</span>
@@ -44,7 +44,7 @@ export function AddDishCard({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-2 rounded-lg border border-neutral-700 p-3">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-2 rounded-lg border border-neutral-300 p-3">
       <input type="text" name="name" placeholder="料理名" required className="input text-sm" />
       <textarea name="description" placeholder="説明（任意）" rows={2} className="input text-sm" />
       <input type="file" name="photo" accept="image/*" required className="text-sm" />
@@ -59,7 +59,7 @@ export function AddDishCard({
         <button
           type="button"
           onClick={() => setOpen(false)}
-          className="rounded border border-neutral-700 px-3 py-1.5 text-sm text-neutral-300"
+          className="rounded border border-neutral-300 px-3 py-1.5 text-sm text-neutral-600"
         >
           キャンセル
         </button>

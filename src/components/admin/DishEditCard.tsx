@@ -24,6 +24,29 @@ export function DishEditCard({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
 
+  async function handleRotate() {
+    setBusy(true);
+    try {
+      const res = await fetch(dish.image_url);
+      const blob = await res.blob();
+      const bitmap = await createImageBitmap(blob);
+      const canvas = document.createElement("canvas");
+      canvas.width = bitmap.height;
+      canvas.height = bitmap.width;
+      const ctx = canvas.getContext("2d")!;
+      ctx.translate(canvas.width / 2, canvas.height / 2);
+      ctx.rotate(Math.PI / 2);
+      ctx.drawImage(bitmap, -bitmap.width / 2, -bitmap.height / 2);
+      const rotatedBlob: Blob = await new Promise((resolve, reject) =>
+        canvas.toBlob((b) => (b ? resolve(b) : reject(new Error("rotate failed"))), "image/jpeg", 0.92),
+      );
+      const file = new File([rotatedBlob], "rotated.jpg", { type: "image/jpeg" });
+      await onPhotoChange(dish.id, file);
+    } finally {
+      setBusy(false);
+    }
+  }
+
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center justify-center gap-2">
@@ -31,7 +54,7 @@ export function DishEditCard({
           type="button"
           disabled={isFirst}
           onClick={() => onReorder(dish.id, "up")}
-          className="rounded border border-neutral-700 px-2 py-0.5 text-xs text-neutral-300 disabled:opacity-30"
+          className="rounded border border-neutral-300 px-2 py-0.5 text-xs text-neutral-600 disabled:opacity-30"
           aria-label="前に移動"
         >
           ←
@@ -40,7 +63,7 @@ export function DishEditCard({
           type="button"
           disabled={isLast}
           onClick={() => onReorder(dish.id, "down")}
-          className="rounded border border-neutral-700 px-2 py-0.5 text-xs text-neutral-300 disabled:opacity-30"
+          className="rounded border border-neutral-300 px-2 py-0.5 text-xs text-neutral-600 disabled:opacity-30"
           aria-label="後に移動"
         >
           →
@@ -59,7 +82,7 @@ export function DishEditCard({
       />
 
       <div
-        className="group relative aspect-square w-full cursor-pointer overflow-hidden rounded-lg bg-neutral-900"
+        className="group relative aspect-square w-full cursor-pointer overflow-hidden rounded-lg bg-neutral-100"
         onClick={() => fileInputRef.current?.click()}
       >
         <Image
@@ -74,9 +97,20 @@ export function DishEditCard({
         </div>
         {busy && (
           <div className="absolute inset-0 flex items-center justify-center bg-black/60 text-sm text-white">
-            アップロード中…
+            処理中…
           </div>
         )}
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            handleRotate();
+          }}
+          aria-label="90度回転"
+          className="absolute left-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-black/60 text-white hover:bg-black/80"
+        >
+          ↻
+        </button>
         <button
           type="button"
           onClick={(e) => {
@@ -84,7 +118,7 @@ export function DishEditCard({
             onArchive(dish.id);
           }}
           aria-label="削除（アーカイブへ）"
-          className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-black/70 text-white hover:bg-red-600"
+          className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-black/60 text-white hover:bg-red-600"
         >
           ×
         </button>

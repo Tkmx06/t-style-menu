@@ -4,12 +4,12 @@ import { LogoutButton } from "@/components/LogoutButton";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex min-h-full flex-col">
-      <header className="border-b border-neutral-800">
+    <div className="flex min-h-full flex-col bg-white text-neutral-900">
+      <header className="border-b border-neutral-200">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
           <div className="flex items-center gap-3">
             <span className="text-lg font-semibold">管理画面</span>
-            <Link href="/" className="text-xs text-neutral-400 hover:text-neutral-200">
+            <Link href="/" className="text-xs text-neutral-500 hover:text-neutral-800">
               サイトを見る ↗
             </Link>
           </div>
@@ -20,12 +20,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <Link
               key={c.slug}
               href={`/admin/${c.slug}`}
-              className="text-neutral-300 hover:text-white transition-colors"
+              className="text-neutral-600 hover:text-neutral-950 transition-colors"
             >
               {c.label}
             </Link>
           ))}
-          <Link href="/admin/archive" className="text-amber-400 hover:text-amber-300">
+          <Link href="/admin/archive" className="text-red-600 hover:text-red-700">
             過去のメニュー
           </Link>
         </nav>

@@ -32,7 +32,9 @@ export default async function CategoryPage(
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold mb-8 text-center">{categoryLabel(category)}</h1>
+      <h1 className="font-script mb-8 text-center text-5xl text-neutral-800">
+        {categoryLabel(category)}
+      </h1>
       {dishes.length === 0 ? (
         <p className="text-neutral-500">まだ料理が登録されていません。</p>
       ) : (
