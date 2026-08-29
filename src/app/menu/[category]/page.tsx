@@ -3,6 +3,7 @@ import { CATEGORIES, categoryLabel } from "@/lib/categories";
 import { getPublicSupabaseClient } from "@/lib/supabase/publicClient";
 import type { Dish } from "@/lib/dish";
 import { DishCard } from "@/components/DishCard";
+import { HeroBanner } from "@/components/HeroBanner";
 
 export const dynamic = "force-dynamic";
 
@@ -32,6 +33,7 @@ export default async function CategoryPage(
 
   return (
     <div>
+      {category === CATEGORIES[0].slug && <HeroBanner />}
       <h1 className="font-script mb-8 text-center text-5xl text-neutral-800">
         {categoryLabel(category)}
       </h1>

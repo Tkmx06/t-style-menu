@@ -82,7 +82,7 @@ export function DishEditCard({
       />
 
       <div
-        className="group relative aspect-square w-full cursor-pointer overflow-hidden rounded-lg bg-neutral-100"
+        className="group relative aspect-[4/5] w-full cursor-pointer overflow-hidden rounded-lg bg-neutral-100"
         onClick={() => fileInputRef.current?.click()}
       >
         <Image
