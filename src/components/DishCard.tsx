@@ -7,7 +7,7 @@ export function DishCard({ dish }: { dish: Dish }) {
       <p className="font-heading text-center text-lg font-semibold text-neutral-900">
         {dish.name}
       </p>
-      <div className="relative aspect-[4/5] w-full overflow-hidden rounded-lg bg-neutral-100 shadow-sm">
+      <div className="relative aspect-[4/3] w-full overflow-hidden rounded-lg bg-neutral-100 shadow-sm">
         <Image
           src={dish.image_url}
           alt={dish.name}

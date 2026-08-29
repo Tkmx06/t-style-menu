@@ -24,7 +24,7 @@ export function DishEditCard({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
 
-  async function handleRotate() {
+  async function handleRotate(direction: "left" | "right") {
     setBusy(true);
     try {
       const res = await fetch(dish.image_url);
@@ -35,7 +35,7 @@ export function DishEditCard({
       canvas.height = bitmap.width;
       const ctx = canvas.getContext("2d")!;
       ctx.translate(canvas.width / 2, canvas.height / 2);
-      ctx.rotate(Math.PI / 2);
+      ctx.rotate((direction === "right" ? 1 : -1) * (Math.PI / 2));
       ctx.drawImage(bitmap, -bitmap.width / 2, -bitmap.height / 2);
       const rotatedBlob: Blob = await new Promise((resolve, reject) =>
         canvas.toBlob((b) => (b ? resolve(b) : reject(new Error("rotate failed"))), "image/jpeg", 0.92),
@@ -82,7 +82,7 @@ export function DishEditCard({
       />
 
       <div
-        className="group relative aspect-[4/5] w-full cursor-pointer overflow-hidden rounded-lg bg-neutral-100"
+        className="group relative aspect-[4/3] w-full cursor-pointer overflow-hidden rounded-lg bg-neutral-100"
         onClick={() => fileInputRef.current?.click()}
       >
         <Image
@@ -100,17 +100,30 @@ export function DishEditCard({
             処理中…
           </div>
         )}
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            handleRotate();
-          }}
-          aria-label="90度回転"
-          className="absolute left-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-black/60 text-white hover:bg-black/80"
-        >
-          ↻
-        </button>
+        <div className="absolute left-2 top-2 flex gap-1">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleRotate("left");
+            }}
+            aria-label="左に90度回転"
+            className="flex h-7 w-7 items-center justify-center rounded-full bg-black/60 text-white hover:bg-black/80"
+          >
+            ↺
+          </button>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleRotate("right");
+            }}
+            aria-label="右に90度回転"
+            className="flex h-7 w-7 items-center justify-center rounded-full bg-black/60 text-white hover:bg-black/80"
+          >
+            ↻
+          </button>
+        </div>
         <button
           type="button"
           onClick={(e) => {

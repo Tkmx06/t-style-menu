@@ -11,17 +11,6 @@ export function HeroBanner() {
         priority
         className="object-cover"
       />
-      <div className="absolute inset-0 flex items-center justify-center p-4">
-        <div className="flex w-full max-w-md items-center justify-center rounded-md bg-white/90 px-6 py-6 shadow-lg sm:max-w-lg">
-          <Image
-            src="/logo.png"
-            alt="t-style Japanisches Bistro"
-            width={1561}
-            height={586}
-            className="h-auto w-full"
-          />
-        </div>
-      </div>
     </div>
   );
 }

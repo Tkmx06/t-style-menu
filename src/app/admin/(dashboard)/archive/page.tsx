@@ -42,7 +42,7 @@ export default function ArchivePage() {
             <div key={dish.id} className="flex flex-col gap-2">
               <p className="text-center text-xs text-neutral-500">{categoryLabel(dish.category)}</p>
               <p className="text-center text-base font-semibold">{dish.name}</p>
-              <div className="relative aspect-[4/5] w-full overflow-hidden rounded-lg bg-neutral-100">
+              <div className="relative aspect-[4/3] w-full overflow-hidden rounded-lg bg-neutral-100">
                 <Image src={dish.image_url} alt={dish.name} fill sizes="400px" className="object-cover" />
               </div>
               {dish.description && (

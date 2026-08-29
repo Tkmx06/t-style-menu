@@ -21,7 +21,7 @@ export function SiteNav() {
             width={1561}
             height={586}
             priority
-            className="h-12 w-auto object-contain sm:h-14"
+            className="h-16 w-auto object-contain sm:h-20"
           />
         </Link>
         <button
