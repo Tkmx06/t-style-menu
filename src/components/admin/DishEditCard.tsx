@@ -2,7 +2,9 @@
 
 import { useRef, useState } from "react";
 import Image from "next/image";
+import type { CSSProperties } from "react";
 import type { Dish } from "@/lib/dish";
+import { PhotoAdjustPanel } from "./PhotoAdjustPanel";
 
 export function DishEditCard({
   dish,
@@ -12,6 +14,7 @@ export function DishEditCard({
   onReorder,
   onPhotoChange,
   onFieldSave,
+  onPhotoAdjust,
 }: {
   dish: Dish;
   isFirst: boolean;
@@ -20,9 +23,11 @@ export function DishEditCard({
   onReorder: (id: string, direction: "up" | "down") => void;
   onPhotoChange: (id: string, file: File) => void;
   onFieldSave: (id: string, field: "name" | "description", value: string) => void;
+  onPhotoAdjust: (id: string, focalX: number, focalY: number, zoom: number) => Promise<void>;
 }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
+  const [adjusting, setAdjusting] = useState(false);
 
   async function handleRotate(direction: "left" | "right") {
     setBusy(true);
@@ -46,6 +51,11 @@ export function DishEditCard({
       setBusy(false);
     }
   }
+
+  const imageStyle: CSSProperties = {
+    objectPosition: `${dish.focal_x * 100}% ${dish.focal_y * 100}%`,
+    transform: `scale(${dish.zoom})`,
+  };
 
   return (
     <div className="flex flex-col gap-2">
@@ -90,6 +100,7 @@ export function DishEditCard({
           alt={dish.name}
           fill
           sizes="(max-width: 640px) 100vw, 400px"
+          style={imageStyle}
           className="object-cover"
         />
         <div className="absolute inset-0 flex items-center justify-center bg-black/0 text-sm text-white opacity-0 transition group-hover:bg-black/40 group-hover:opacity-100">
@@ -123,6 +134,17 @@ export function DishEditCard({
           >
             ↻
           </button>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setAdjusting(true);
+            }}
+            aria-label="切り抜き・拡大を調整"
+            className="flex h-7 w-7 items-center justify-center rounded-full bg-black/60 text-white hover:bg-black/80"
+          >
+            ⛶
+          </button>
         </div>
         <button
           type="button"
@@ -151,6 +173,20 @@ export function DishEditCard({
           }}
         />
       </div>
+
+      {adjusting && (
+        <PhotoAdjustPanel
+          imageUrl={dish.image_url}
+          initialFocalX={dish.focal_x}
+          initialFocalY={dish.focal_y}
+          initialZoom={dish.zoom}
+          onCancel={() => setAdjusting(false)}
+          onSave={async (focalX, focalY, zoom) => {
+            await onPhotoAdjust(dish.id, focalX, focalY, zoom);
+            setAdjusting(false);
+          }}
+        />
+      )}
 
       <textarea
         defaultValue={dish.description ?? ""}

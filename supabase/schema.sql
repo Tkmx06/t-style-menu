@@ -8,6 +8,9 @@ create table if not exists dishes (
   image_url text not null,
   sort_order integer not null default 0,
   status text not null default 'published' check (status in ('published','archived')),
+  focal_x numeric not null default 0.5 check (focal_x >= 0 and focal_x <= 1),
+  focal_y numeric not null default 0.5 check (focal_y >= 0 and focal_y <= 1),
+  zoom numeric not null default 1 check (zoom >= 1 and zoom <= 3),
   created_at timestamptz not null default now()
 );
 

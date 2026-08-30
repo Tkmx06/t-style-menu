@@ -74,6 +74,18 @@ export default function AdminCategoryPage() {
     }
   }
 
+  async function handlePhotoAdjust(id: string, focalX: number, focalY: number, zoom: number) {
+    const res = await fetch(`/api/admin/dishes/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ focal_x: focalX, focal_y: focalY, zoom }),
+    });
+    const body = await res.json();
+    if (res.ok) {
+      setDishes((prev) => prev?.map((d) => (d.id === id ? body.dish : d)) ?? prev);
+    }
+  }
+
   async function handleAdd(formData: FormData) {
     const res = await fetch("/api/admin/dishes", { method: "POST", body: formData });
     const body = await res.json();
@@ -99,6 +111,7 @@ export default function AdminCategoryPage() {
               onReorder={handleReorder}
               onPhotoChange={handlePhotoChange}
               onFieldSave={handleFieldSave}
+              onPhotoAdjust={handlePhotoAdjust}
             />
           ))}
           <AddDishCard category={category} onAdd={handleAdd} />

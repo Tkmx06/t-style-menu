@@ -8,5 +8,8 @@ export type Dish = {
   image_url: string;
   sort_order: number;
   status: DishStatus;
+  focal_x: number;
+  focal_y: number;
+  zoom: number;
   created_at: string;
 };

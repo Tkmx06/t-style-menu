@@ -8,7 +8,7 @@ export async function PATCH(
   const { id } = await params;
   const body = await request.json();
 
-  const update: Record<string, string | null> = {};
+  const update: Record<string, string | number | null> = {};
   if (typeof body.name === "string") {
     if (body.name.trim() === "") {
       return NextResponse.json({ error: "料理名は空にできません。" }, { status: 400 });
@@ -17,6 +17,15 @@ export async function PATCH(
   }
   if (typeof body.description === "string") {
     update.description = body.description.trim() === "" ? null : body.description.trim();
+  }
+  if (typeof body.focal_x === "number") {
+    update.focal_x = Math.min(1, Math.max(0, body.focal_x));
+  }
+  if (typeof body.focal_y === "number") {
+    update.focal_y = Math.min(1, Math.max(0, body.focal_y));
+  }
+  if (typeof body.zoom === "number") {
+    update.zoom = Math.min(3, Math.max(1, body.zoom));
   }
 
   if (Object.keys(update).length === 0) {
