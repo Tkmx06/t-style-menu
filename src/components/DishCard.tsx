@@ -11,7 +11,7 @@ export function DishCard({ dish }: { dish: Dish }) {
 
   return (
     <div className="flex flex-col gap-3">
-      <p className="text-center text-xl font-normal text-neutral-900">
+      <p className="font-heading text-center text-lg font-light uppercase tracking-[0.15em] text-neutral-900">
         {dish.name}
       </p>
       <div className="group relative aspect-[4/3] w-full overflow-hidden rounded-lg bg-neutral-100 shadow-sm">

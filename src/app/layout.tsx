@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Noto_Sans, Poppins, Alex_Brush } from "next/font/google";
+import { Noto_Sans, Josefin_Sans, Alex_Brush } from "next/font/google";
 import "./globals.css";
 
 const notoSans = Noto_Sans({
@@ -7,9 +7,9 @@ const notoSans = Noto_Sans({
   subsets: ["latin"],
 });
 
-const poppins = Poppins({
+const josefinSans = Josefin_Sans({
   variable: "--font-heading",
-  weight: ["500", "600", "700"],
+  weight: ["300", "400", "500"],
   subsets: ["latin"],
 });
 
@@ -28,7 +28,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="de"
-      className={`${notoSans.variable} ${poppins.variable} ${alexBrush.variable} h-full antialiased`}
+      className={`${notoSans.variable} ${josefinSans.variable} ${alexBrush.variable} h-full antialiased`}
     >
       <body className="min-h-full bg-white text-neutral-900">{children}</body>
     </html>
