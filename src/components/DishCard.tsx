@@ -10,8 +10,8 @@ export function DishCard({ dish }: { dish: Dish }) {
   } as CSSProperties;
 
   return (
-    <div className="flex flex-col gap-3">
-      <p className="font-heading text-center text-lg font-light uppercase tracking-[0.15em] text-neutral-900">
+    <div className="flex flex-col">
+      <p className="font-heading mb-1.5 text-center text-2xl font-light uppercase tracking-[0.15em] text-neutral-900">
         {dish.name}
       </p>
       <div className="group relative aspect-[4/3] w-full overflow-hidden rounded-lg bg-neutral-100 shadow-sm">
@@ -25,7 +25,9 @@ export function DishCard({ dish }: { dish: Dish }) {
         />
       </div>
       {dish.description && (
-        <p className="text-center text-sm text-neutral-500">{dish.description}</p>
+        <p className="font-heading mt-3 text-center text-base font-light text-neutral-500">
+          {dish.description}
+        </p>
       )}
     </div>
   );
