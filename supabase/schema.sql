@@ -11,6 +11,7 @@ create table if not exists dishes (
   focal_x numeric not null default 0.5 check (focal_x >= 0 and focal_x <= 1),
   focal_y numeric not null default 0.5 check (focal_y >= 0 and focal_y <= 1),
   zoom numeric not null default 1 check (zoom >= 1 and zoom <= 3),
+  rotation numeric not null default 0 check (rotation >= -45 and rotation <= 45),
   created_at timestamptz not null default now()
 );
 

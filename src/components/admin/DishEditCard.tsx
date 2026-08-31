@@ -23,7 +23,13 @@ export function DishEditCard({
   onReorder: (id: string, direction: "up" | "down") => void;
   onPhotoChange: (id: string, file: File) => void;
   onFieldSave: (id: string, field: "name" | "description", value: string) => void;
-  onPhotoAdjust: (id: string, focalX: number, focalY: number, zoom: number) => Promise<void>;
+  onPhotoAdjust: (
+    id: string,
+    focalX: number,
+    focalY: number,
+    zoom: number,
+    rotation: number,
+  ) => Promise<void>;
 }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
@@ -54,7 +60,7 @@ export function DishEditCard({
 
   const imageStyle: CSSProperties = {
     objectPosition: `${dish.focal_x * 100}% ${dish.focal_y * 100}%`,
-    transform: `scale(${dish.zoom})`,
+    transform: `scale(${dish.zoom}) rotate(${dish.rotation}deg)`,
   };
 
   return (
@@ -180,9 +186,10 @@ export function DishEditCard({
           initialFocalX={dish.focal_x}
           initialFocalY={dish.focal_y}
           initialZoom={dish.zoom}
+          initialRotation={dish.rotation}
           onCancel={() => setAdjusting(false)}
-          onSave={async (focalX, focalY, zoom) => {
-            await onPhotoAdjust(dish.id, focalX, focalY, zoom);
+          onSave={async (focalX, focalY, zoom, rotation) => {
+            await onPhotoAdjust(dish.id, focalX, focalY, zoom, rotation);
             setAdjusting(false);
           }}
         />

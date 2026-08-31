@@ -11,5 +11,6 @@ export type Dish = {
   focal_x: number;
   focal_y: number;
   zoom: number;
+  rotation: number;
   created_at: string;
 };

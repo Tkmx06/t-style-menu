@@ -74,11 +74,17 @@ export default function AdminCategoryPage() {
     }
   }
 
-  async function handlePhotoAdjust(id: string, focalX: number, focalY: number, zoom: number) {
+  async function handlePhotoAdjust(
+    id: string,
+    focalX: number,
+    focalY: number,
+    zoom: number,
+    rotation: number,
+  ) {
     const res = await fetch(`/api/admin/dishes/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ focal_x: focalX, focal_y: focalY, zoom }),
+      body: JSON.stringify({ focal_x: focalX, focal_y: focalY, zoom, rotation }),
     });
     const body = await res.json();
     if (res.ok) {

@@ -11,6 +11,7 @@ export function PhotoAdjustPanel({
   initialFocalX,
   initialFocalY,
   initialZoom,
+  initialRotation,
   onSave,
   onCancel,
 }: {
@@ -18,24 +19,26 @@ export function PhotoAdjustPanel({
   initialFocalX: number;
   initialFocalY: number;
   initialZoom: number;
-  onSave: (focalX: number, focalY: number, zoom: number) => Promise<void>;
+  initialRotation: number;
+  onSave: (focalX: number, focalY: number, zoom: number, rotation: number) => Promise<void>;
   onCancel: () => void;
 }) {
   const [focalX, setFocalX] = useState(initialFocalX);
   const [focalY, setFocalY] = useState(initialFocalY);
   const [zoom, setZoom] = useState(initialZoom);
+  const [rotation, setRotation] = useState(initialRotation);
   const [saving, setSaving] = useState(false);
 
   const clamp = (v: number) => Math.min(1, Math.max(0, v));
 
   const previewStyle: CSSProperties = {
     objectPosition: `${focalX * 100}% ${focalY * 100}%`,
-    transform: `scale(${zoom})`,
+    transform: `scale(${zoom}) rotate(${rotation}deg)`,
   };
 
   async function handleSave() {
     setSaving(true);
-    await onSave(focalX, focalY, zoom);
+    await onSave(focalX, focalY, zoom, rotation);
     setSaving(false);
   }
 
@@ -101,6 +104,27 @@ export function PhotoAdjustPanel({
           className="flex-1"
         />
         <span className="w-10 text-right">{zoom.toFixed(2)}x</span>
+      </label>
+
+      <label className="flex items-center gap-2 text-xs text-neutral-600">
+        角度
+        <input
+          type="range"
+          min={-45}
+          max={45}
+          step={1}
+          value={rotation}
+          onChange={(e) => setRotation(Number(e.target.value))}
+          className="flex-1"
+        />
+        <span className="w-10 text-right">{rotation}°</span>
+        <button
+          type="button"
+          onClick={() => setRotation(0)}
+          className="rounded border border-neutral-300 bg-white px-1.5 py-0.5 text-[11px]"
+        >
+          リセット
+        </button>
       </label>
 
       <div className="flex gap-2">

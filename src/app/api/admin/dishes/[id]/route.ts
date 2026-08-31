@@ -27,6 +27,9 @@ export async function PATCH(
   if (typeof body.zoom === "number") {
     update.zoom = Math.min(3, Math.max(1, body.zoom));
   }
+  if (typeof body.rotation === "number") {
+    update.rotation = Math.min(45, Math.max(-45, body.rotation));
+  }
 
   if (Object.keys(update).length === 0) {
     return NextResponse.json({ error: "更新内容がありません。" }, { status: 400 });

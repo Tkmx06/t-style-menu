@@ -6,6 +6,7 @@ export function DishCard({ dish }: { dish: Dish }) {
   const imageStyle: CSSProperties = {
     objectPosition: `${dish.focal_x * 100}% ${dish.focal_y * 100}%`,
     "--dish-zoom": dish.zoom,
+    "--dish-rot": `${dish.rotation}deg`,
   } as CSSProperties;
 
   return (
@@ -20,7 +21,7 @@ export function DishCard({ dish }: { dish: Dish }) {
           fill
           sizes="(max-width: 640px) 100vw, 400px"
           style={imageStyle}
-          className="scale-[var(--dish-zoom)] object-cover transition-transform duration-500 group-hover:scale-[calc(var(--dish-zoom)*1.05)]"
+          className="rotate-[var(--dish-rot)] scale-[var(--dish-zoom)] object-cover transition-transform duration-500 group-hover:scale-[calc(var(--dish-zoom)*1.05)]"
         />
       </div>
       {dish.description && (
