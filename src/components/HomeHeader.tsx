@@ -2,8 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 
 const RESERVATION_URL = "https://restaurant-reservation-ebon.vercel.app/reservation";
-// TODO: 実際のInstagramアカウントのURL(例: https://www.instagram.com/xxxxx/)に差し替えてください。
-const INSTAGRAM_URL = "https://www.instagram.com/";
+const INSTAGRAM_URL = "https://www.instagram.com/t_style_frankfurt/";
 const MENU_URL = "https://amour.pecori.jp/t_style/food.html";
 // TODO: この店の「LUNCH」向けページがまだ存在しないため、旧サイトの該当リンクをそのまま暫定的に使っています。
 // 新しいランチページができたら、ここを差し替えてください。
