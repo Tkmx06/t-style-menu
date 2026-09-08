@@ -15,7 +15,7 @@ export type Category = {
 export const CATEGORIES: Category[] = [
   { slug: "empfehlung", label: "Unsere Empfehlung" },
   { slug: "lunch", label: "Lunch" },
-  { slug: "menu-pages", label: "Speisekarte" },
+  { slug: "menu-pages", label: "Dinner" },
 ];
 
 export function categoryLabel(slug: string): string {
