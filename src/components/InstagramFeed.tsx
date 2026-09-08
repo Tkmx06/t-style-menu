@@ -1,35 +1,86 @@
-import Script from "next/script";
+"use client";
 
-// SnapWidget (https://snapwidget.com) のダッシュボードで発行された公式の埋め込みコードを
-// そのまま使用しています(<script src="https://snapwidget.com/js/snapwidget.js"> + iframe)。
-// width: 100% でコンテナ幅いっぱいに表示され、高さは scrolling="no" のままウィジェット側の
-// スクリプトが投稿数に応じて自動調整します(以前のように高さを固定して見切れることはありません)。
+import Script from "next/script";
+import { useEffect } from "react";
+
+declare global {
+  interface Window {
+    instgrm?: {
+      Embeds: {
+        process: () => void;
+      };
+    };
+  }
+}
+
+// SnapWidgetのフリープランでは、iPhone Safari(モバイル)で埋め込み欄が
+// 真っ白のまま表示されないという問題が解消しなかったため、Instagram公式の
+// 埋め込み機能(無料・トークン不要)に切り替えました。
 //
-// strategy="afterInteractive" にして、ページが操作可能になった直後にスクリプトを読み込む
-// ようにしています(以前の "lazyOnload" だとブラウザがアイドル状態になるまで待つため、
-// モバイル回線など環境によっては表示が始まるまでかなり時間がかかったり、遅延することが
-// ありました)。
+// 仕組み: Instagramの投稿ページで「埋め込み」を選ぶと発行されるのと同じ、
+// 公式の <blockquote class="instagram-media"> + embed.js を使用しています。
+// この方式はInstagram自身のスクリプトが投稿の高さに合わせて自動でリサイズ
+// してくれるため、SnapWidgetのように高さがずれて見切れる心配がありません。
 //
-// 注意: SnapWidgetの標準ウィジェットは「最新の投稿」を並べる仕組みで、
-// Instagram側の「ピン留め投稿」を区別して取得する機能は持っていません。
-// 特定の2枚(最新+ピン留め)だけを厳密に出し分けたい場合は、SnapWidgetダッシュボード側の
-// 表示件数/列数の設定を確認いただくか、Instagram Graph APIを使った作り込みが必要です。
+// 注意点(SnapWidgetとの違い):
+// ・自動で最新投稿に更新される「フィード」ではなく、指定した投稿を
+//   個別に埋め込む方式です。新しい投稿に差し替えたい場合は、下の
+//   POSTS配列のInstagram投稿ID(URLの /p/ の後ろの部分)を書き換える
+//   必要があります。
+// ・投稿IDはInstagramの投稿を開き、右上の「...」→「埋め込み」から
+//   コピーできるURL(https://www.instagram.com/p/XXXXXXXXXXX/)の
+//   XXXXXXXXXXXの部分です。
+const POSTS = [
+  "DMSg-YPIQQX", // 最新投稿(イベリコ丼)
+  "Dc0IKxsAeJS", // 9月ランチカレンダー
+];
+
 export function InstagramFeed() {
+  // ページ遷移(クライアントサイドナビゲーション)で再訪した際、
+  // embed.js は既に読み込み済みでonLoadが発火しないことがあるため、
+  // マウント時にも明示的に process() を呼んで埋め込みを描画させます。
+  useEffect(() => {
+    window.instgrm?.Embeds.process();
+  }, []);
+
   return (
     <section className="flex flex-col items-center gap-4 bg-white px-4 py-12">
       <h2 className="font-script text-3xl text-neutral-800">Instagram</h2>
-      <div className="mx-auto w-full max-w-[620px]">
-        <Script src="https://snapwidget.com/js/snapwidget.js" strategy="afterInteractive" />
-        <iframe
-          src="https://snapwidget.com/embed/1098542"
-          className="snapwidget-widget"
-          allowTransparency
-          frameBorder="0"
-          scrolling="no"
-          style={{ border: "none", overflow: "hidden", width: "100%" }}
-          title="Posts from Instagram"
-        />
+      <div className="mx-auto flex w-full max-w-[700px] flex-col items-center gap-6 md:flex-row md:items-start md:justify-center">
+        {POSTS.map((shortcode) => (
+          <blockquote
+            key={shortcode}
+            className="instagram-media"
+            data-instgrm-permalink={`https://www.instagram.com/p/${shortcode}/`}
+            data-instgrm-version="14"
+            style={{
+              background: "#FFF",
+              border: 0,
+              borderRadius: 3,
+              margin: 0,
+              maxWidth: 400,
+              minWidth: 300,
+              width: "100%",
+              padding: 0,
+            }}
+          >
+            <a
+              href={`https://www.instagram.com/p/${shortcode}/`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              Instagramで投稿を見る
+            </a>
+          </blockquote>
+        ))}
       </div>
+      <Script
+        src="https://www.instagram.com/embed.js"
+        strategy="afterInteractive"
+        onLoad={() => {
+          window.instgrm?.Embeds.process();
+        }}
+      />
     </section>
   );
 }
