@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { Dish } from "@/lib/dish";
+import { dishImageStyle } from "@/lib/dishImageStyle";
 
 const INTERVAL_MS = 4000;
 
@@ -41,9 +42,7 @@ export function PhotoSlideshow({ dishes }: { dishes: Dish[] }) {
               fill
               sizes="100vw"
               priority={i === 0}
-              style={{
-                objectPosition: `${dish.focal_x * 100}% ${dish.focal_y * 100}%`,
-              }}
+              style={dishImageStyle(dish)}
               className="object-cover"
             />
             <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent px-4 pb-4 pt-10 sm:px-8 sm:pb-6">

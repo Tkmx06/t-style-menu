@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import type { Dish } from "@/lib/dish";
+import { dishImageStyle } from "@/lib/dishImageStyle";
 
 export function DishListView({
   dishes,
@@ -27,10 +28,7 @@ export function DishListView({
               alt={dish.name}
               fill
               sizes="64px"
-              style={{
-                objectPosition: `${dish.focal_x * 100}% ${dish.focal_y * 100}%`,
-                transform: `scale(${dish.zoom}) rotate(${dish.rotation}deg)`,
-              }}
+              style={dishImageStyle(dish)}
               className="object-cover"
             />
           </div>
