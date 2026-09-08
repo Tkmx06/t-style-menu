@@ -28,7 +28,8 @@ declare global {
 //   編集できます(データはsite_content.instagram_post_idsに保存)。
 //
 // FALLBACK_POSTSは、設定が未保存/取得エラー時のための最後の保険です。
-const FALLBACK_POSTS = ["DMSg-YPIQQX", "Dc0IKxsAeJS"];
+// 2026-09-08: 表示順(上下/左右)を入れ替えてほしいとの要望で並び順を変更しました。
+const FALLBACK_POSTS = ["Dc0IKxsAeJS", "DMSg-YPIQQX"];
 
 export function InstagramFeed({ postIds }: { postIds?: string[] }) {
   const posts = postIds && postIds.length > 0 ? postIds : FALLBACK_POSTS;
@@ -42,7 +43,6 @@ export function InstagramFeed({ postIds }: { postIds?: string[] }) {
 
   return (
     <section className="flex flex-col items-center gap-4 bg-white px-4 py-12">
-      <h2 className="font-script text-3xl text-neutral-800">Instagram</h2>
       <div className="mx-auto flex w-full max-w-[700px] flex-col items-center gap-6 md:flex-row md:flex-wrap md:items-start md:justify-center">
         {posts.map((shortcode) => (
           <blockquote
