@@ -2,8 +2,8 @@
 
 import { useRef, useState } from "react";
 import Image from "next/image";
-import type { CSSProperties } from "react";
 import type { Dish } from "@/lib/dish";
+import { dishImageStyle } from "@/lib/dishImageStyle";
 import { PhotoAdjustPanel } from "./PhotoAdjustPanel";
 
 export function DishEditCard({
@@ -58,10 +58,7 @@ export function DishEditCard({
     }
   }
 
-  const imageStyle: CSSProperties = {
-    objectPosition: `${dish.focal_x * 100}% ${dish.focal_y * 100}%`,
-    transform: `scale(${dish.zoom}) rotate(${dish.rotation}deg)`,
-  };
+  const imageStyle = dishImageStyle(dish);
 
   return (
     <div className="flex flex-col gap-2">

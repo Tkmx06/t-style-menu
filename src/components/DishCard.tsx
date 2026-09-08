@@ -4,7 +4,7 @@ import type { CSSProperties } from "react";
 
 export function DishCard({ dish }: { dish: Dish }) {
   const imageStyle: CSSProperties = {
-    objectPosition: `${dish.focal_x * 100}% ${dish.focal_y * 100}%`,
+    transformOrigin: `${dish.focal_x * 100}% ${dish.focal_y * 100}%`,
     "--dish-zoom": dish.zoom,
     "--dish-rot": `${dish.rotation}deg`,
   } as CSSProperties;

@@ -32,7 +32,7 @@ export function PhotoAdjustPanel({
   const clamp = (v: number) => Math.min(1, Math.max(0, v));
 
   const previewStyle: CSSProperties = {
-    objectPosition: `${focalX * 100}% ${focalY * 100}%`,
+    transformOrigin: `${focalX * 100}% ${focalY * 100}%`,
     transform: `scale(${zoom}) rotate(${rotation}deg)`,
   };
 
@@ -91,6 +91,11 @@ export function PhotoAdjustPanel({
           ↓
         </button>
       </div>
+      {zoom <= 1 && (
+        <p className="text-center text-[11px] text-neutral-400">
+          ※ 拡大が1.00xのままだと位置調整の見た目の変化がありません。まず「拡大」を上げてからお試しください。
+        </p>
+      )}
 
       <label className="flex items-center gap-2 text-xs text-neutral-600">
         拡大
