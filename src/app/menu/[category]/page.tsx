@@ -4,9 +4,11 @@ import { getPublicSupabaseClient } from "@/lib/supabase/publicClient";
 import type { Dish } from "@/lib/dish";
 import { DishCard } from "@/components/DishCard";
 import { HeroBanner } from "@/components/HeroBanner";
-import { MenuPdfEmbed } from "@/components/MenuPdfEmbed";
+import { MenuPagesGallery } from "@/components/MenuPagesGallery";
 
 export const dynamic = "force-dynamic";
+
+const MENU_PAGES_SLUG = "menu-pages";
 
 export default async function CategoryPage(
   props: PageProps<"/menu/[category]">,
@@ -32,17 +34,31 @@ export default async function CategoryPage(
 
   const dishes = (data ?? []) as Dish[];
 
+  // MENUタブ(menu-pages)は、料理写真のカード一覧ではなく、正式なメニュー表の
+  // 各ページ画像を上から順にそのまま並べる専用レイアウトを使います。
+  if (category === MENU_PAGES_SLUG) {
+    return (
+      <div>
+        <h1 className="font-script mb-8 text-center text-5xl text-neutral-800">
+          {categoryLabel(category)}
+        </h1>
+        {dishes.length === 0 ? (
+          <p className="text-center text-neutral-500">
+            まだメニュー表のページが登録されていません。
+          </p>
+        ) : (
+          <MenuPagesGallery dishes={dishes} />
+        )}
+      </div>
+    );
+  }
+
   return (
     <div>
       {category === CATEGORIES[0].slug && <HeroBanner />}
       <h1 className="font-script mb-8 text-center text-5xl text-neutral-800">
         {categoryLabel(category)}
       </h1>
-      {/*
-        「おすすめ」(PHOTO)と「Lunch」は写真ギャラリー/専用ページとして運用しているため、
-        価格入りの正式メニュー表(PDF)の埋め込み表示はMENUの各カテゴリだけに表示します。
-      */}
-      {category !== CATEGORIES[0].slug && category !== "lunch" && <MenuPdfEmbed />}
       {dishes.length === 0 ? (
         <p className="text-neutral-500">まだ料理が登録されていません。</p>
       ) : (
