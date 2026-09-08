@@ -69,12 +69,22 @@ export default async function Home() {
       {/*
         予約フォームをそのまま埋め込んでいます(restaurant-reservation-ebon.vercel.app)。
         旧ホームページ(amour.pecori.jp)の本文埋め込みは廃止しました。
+
+        2026-09-08: 「予約フォームに触ると上下にスライドしてしまい、ページ全体を
+        スクロールできない」との指摘を受けて対応しました。原因は、埋め込み先の
+        予約アプリの実際のコンテンツの高さ(実測で約898px)がiframeのminHeight
+        (900px)にほぼ一致していたため、わずかな誤差でもiframe内部に隙間なく
+        スクロール余地が生まれ、スマホでのタッチスワイプがページ全体ではなく
+        iframe内部のスクロールとして処理されてしまっていたことです。
+        余裕を持ってminHeightを増やし、念のためiframe自体のスクロールを
+        scrolling="no"で無効化して、iframe内部が動かないようにしました。
       */}
       <iframe
         src="https://restaurant-reservation-ebon.vercel.app/reservation"
         title="ご予約"
         className="w-full flex-1 border-0"
-        style={{ minHeight: "900px" }}
+        style={{ minHeight: "1050px" }}
+        scrolling="no"
       />
       <HomeFooter />
     </div>
