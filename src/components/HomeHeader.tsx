@@ -5,12 +5,11 @@ import { TabBar } from "@/components/TabBar";
 const RESERVATION_URL = "https://restaurant-reservation-ebon.vercel.app/reservation";
 const INSTAGRAM_URL = "https://www.instagram.com/t_style_frankfurt/";
 
-// 2026-09-08: DE/EN/JP言語切り替えボタンを廃止し、テキストに依存しない
-// アイコンだけのヘッダーにしました(どの言語の人が見ても分かるように)。
-// ・右上: Instagramへのリンクアイコン(以前は予約ボタンの隣にありました)
-// ・中央: 「Jetzt reservieren」というテキストボタンの代わりに、
-//   テーブル予約であることが一目で分かるアイコンボタン(テーブル+予約確定の
-//   チェックマーク)に変更しました。
+// 2026-09-08: DE/EN/JP言語切り替えボタンを廃止し、右上にInstagramへの
+// リンクアイコンを設置しました。
+// 中央の予約ボタンは、一時的にテーブル予約アイコンのみのデザインに変更しましたが、
+// 「Jetzt reservieren」の文字が無いと分かりにくいとのことで、テーブル予約アイコンと
+// 「Jetzt reservieren」の文字を1つのボタンの中に並べる形に戻しました。
 //
 // このヘッダーはホーム画面だけでなく、/menu以下の全ページ(src/app/menu/layout.tsx)
 // でも共通で使っており、ロゴ・予約ボタン・Instagramリンク・下の黒いタブバー
@@ -59,20 +58,19 @@ export function HomeHeader() {
           href={RESERVATION_URL}
           target="_blank"
           rel="noopener noreferrer"
-          aria-label="Tisch reservieren"
-          title="Tisch reservieren"
-          className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-red-600 text-white shadow-sm transition-colors hover:bg-red-700 sm:h-[72px] sm:w-[72px]"
+          className="inline-flex items-center gap-2.5 rounded-full bg-red-600 px-6 py-3 text-white shadow-sm transition-colors hover:bg-red-700 sm:px-7 sm:py-3.5"
         >
           <svg
             viewBox="0 0 24 24"
-            width="30"
-            height="30"
+            width="24"
+            height="24"
             fill="none"
             stroke="currentColor"
             strokeWidth="1.7"
             strokeLinecap="round"
             strokeLinejoin="round"
             aria-hidden="true"
+            className="shrink-0"
           >
             <ellipse cx="10.5" cy="10.5" rx="7.5" ry="5.5" />
             <path d="M10.5 16v3.5M7 19.5h7" />
@@ -84,6 +82,9 @@ export function HomeHeader() {
               fill="none"
             />
           </svg>
+          <span className="text-sm font-semibold tracking-wide sm:text-base">
+            Jetzt reservieren
+          </span>
         </a>
       </div>
 
