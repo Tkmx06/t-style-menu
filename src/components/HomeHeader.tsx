@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { TABS } from "@/lib/homeNav";
+import { TabBar } from "@/components/TabBar";
 
 const RESERVATION_URL = "https://restaurant-reservation-ebon.vercel.app/reservation";
 const INSTAGRAM_URL = "https://www.instagram.com/t_style_frankfurt/";
@@ -90,30 +90,7 @@ export function HomeHeader() {
         </div>
       </div>
 
-      <nav className="bg-neutral-900">
-        <div className="mx-auto flex max-w-5xl">
-          {TABS.map((tab) => {
-            const isInternal = tab.href.startsWith("/");
-            const className =
-              "flex-1 py-3 text-center text-sm font-semibold tracking-widest text-white transition-colors hover:bg-neutral-700 sm:text-base";
-            return isInternal ? (
-              <Link key={tab.label} href={tab.href} className={className}>
-                {tab.label}
-              </Link>
-            ) : (
-              <a
-                key={tab.label}
-                href={tab.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={className}
-              >
-                {tab.label}
-              </a>
-            );
-          })}
-        </div>
-      </nav>
+      <TabBar />
     </header>
   );
 }
