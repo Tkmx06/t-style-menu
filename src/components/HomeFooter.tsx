@@ -2,11 +2,9 @@ import Link from "next/link";
 import { TABS } from "@/lib/homeNav";
 
 // 旧サイト(amour.pecori.jp/t_style)の一番下の黒いバー(サイトマップ+コピーライト)を、
-// 新しいヘッダーのタブ構成(MENU/LUNCH/PHOTO)に合わせて再現したフッターです。
-const SITE_LINKS = [
-  { label: "HOME", href: "/" },
-  ...TABS,
-];
+// 新しいヘッダーのタブ構成(HOME/MENU/PHOTO)に合わせて再現したフッターです。
+// TABS自体に2026-09-08からHOMEが含まれているため、ここではそのまま使います。
+const SITE_LINKS = TABS;
 
 export function HomeFooter() {
   return (

@@ -19,11 +19,13 @@ function shuffle<T>(items: T[]): T[] {
 async function getSlideshowDishes(): Promise<Dish[]> {
   const supabase = getPublicSupabaseClient();
   // スライドショーは「おすすめ」カテゴリーだけでなく、公開中の全メニュー写真を
-  // 対象にランダムな順番で表示します。
+  // 対象にランダムな順番で表示します。ただし「menu-pages」(正式なメニュー表PDFの
+  // ページ画像)は料理写真ではないため、2026-09-08から除外しています。
   const { data, error } = await supabase
     .from("dishes")
     .select("*")
-    .eq("status", "published");
+    .eq("status", "published")
+    .neq("category", "menu-pages");
 
   if (error) {
     // ホームページの表示自体は止めたくないので、失敗時は空配列にする
