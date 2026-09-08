@@ -29,3 +29,35 @@ create policy "public read" on dishes
 
 -- Storage: create a public bucket named "dish-photos" from the Supabase
 -- dashboard (Storage -> New bucket -> Public bucket). No SQL needed for that.
+
+-- Site-wide settings, kept as a single row (id = 'main'). Currently used for
+-- the Instagram post IDs shown on the homepage embed (edited from
+-- /admin/settings); more fields (address/hours/about text etc.) may be
+-- added later.
+create table if not exists site_content (
+  id text primary key default 'main',
+  address text not null default '',
+  phone text not null default '',
+  hours_ja text not null default '',
+  hours_de text not null default '',
+  hours_en text not null default '',
+  about_ja text not null default '',
+  about_de text not null default '',
+  about_en text not null default '',
+  reservation_url text not null default '',
+  instagram_post_ids text[] not null default '{}',
+  updated_at timestamptz not null default now()
+);
+
+alter table site_content enable row level security;
+
+-- Anyone can read site settings (used by the public homepage).
+create policy "Anyone can read site content" on site_content
+  for select
+  using (true);
+
+-- Writes only happen server-side via the service role key (used in the
+-- admin settings API route), so no public write policy is defined. Do not
+-- add public insert/update policies here — a previous version of this table
+-- allowed anonymous writes (and even stored a plaintext admin password),
+-- which let anyone with the public anon key rewrite site content.
