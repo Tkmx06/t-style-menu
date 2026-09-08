@@ -70,10 +70,14 @@ export default async function CategoryPage(
   // 写真が一切トリミングされずにそのまま全体表示されるようにしました(MENUページと
   // 同じ考え方)。カテゴリ選択ボタンは11個あり折り返すため、モバイル時の最低高さは
   // MENUページより少し高めにしています。
+  //
+  // 2026-09-08(続き): 「トリミングなしのまま、上の黒いバーの右端とこの写真の右端を
+  // 揃えてほしい」との要望で、MENUページと同じ理由・同じ方法(-mx-4で親のpx-4を
+  // 打ち消して画面幅いっぱいに表示、角丸は廃止)で対応しました。
   if (isPhotoCategory) {
     return (
       <div>
-        <div className="relative mb-10 flex min-h-[300px] aspect-[1599/861] flex-col items-center justify-center gap-6 overflow-hidden rounded-2xl px-4 py-10 text-center sm:min-h-0">
+        <div className="relative -mx-4 mb-10 flex min-h-[300px] aspect-[1599/861] flex-col items-center justify-center gap-6 overflow-hidden px-4 py-10 text-center sm:min-h-0">
           <Image
             src="/hero-banner.jpg"
             alt=""
