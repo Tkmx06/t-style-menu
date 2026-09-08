@@ -11,6 +11,10 @@ const INSTAGRAM_URL = "https://www.instagram.com/t_style_frankfurt/";
 // 「Jetzt reservieren」の文字が無いと分かりにくいとのことで、テーブル予約アイコンと
 // 「Jetzt reservieren」の文字を1つのボタンの中に並べる形に戻しました。
 //
+// 2026-09-08(続き): 「予約ボタンのテーブル予約マークが分かりにくい」との指摘を受け、
+// 5案のアイコン候補を提示し、「カレンダー＋チェックマーク」案を採用しました。
+// 日付を選んで予約が完了するイメージが直感的に伝わるアイコンです。
+//
 // このヘッダーはホーム画面だけでなく、/menu以下の全ページ(src/app/menu/layout.tsx)
 // でも共通で使っており、ロゴ・予約ボタン・Instagramリンク・下の黒いタブバー
 // (HOME/MENU/PHOTO)がどのページでも必ず同じ内容で表示されるようにしています。
@@ -72,15 +76,10 @@ export function HomeHeader() {
             aria-hidden="true"
             className="shrink-0"
           >
-            <ellipse cx="10.5" cy="10.5" rx="7.5" ry="5.5" />
-            <path d="M10.5 16v3.5M7 19.5h7" />
-            <circle cx="18" cy="16.5" r="5" fill="#16a34a" stroke="white" strokeWidth="1.4" />
-            <path
-              d="M15.7 16.6l1.6 1.6 3-3.2"
-              stroke="white"
-              strokeWidth="1.6"
-              fill="none"
-            />
+            <rect x="3.5" y="4.5" width="17" height="16" rx="2.5" />
+            <path d="M3.5 9.5h17" />
+            <path d="M8 3v3M16 3v3" />
+            <path d="M8.5 14l2 2 4-4" />
           </svg>
           <span className="text-sm font-semibold tracking-wide sm:text-base">
             Jetzt reservieren
