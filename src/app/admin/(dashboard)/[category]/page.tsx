@@ -1,18 +1,23 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams } from "next/navigation";
 import { CATEGORIES, categoryLabel } from "@/lib/categories";
 import { notFound } from "next/navigation";
 import type { Dish } from "@/lib/dish";
 import { DishEditCard } from "@/components/admin/DishEditCard";
 import { AddDishCard } from "@/components/admin/AddDishCard";
+import { DishListView } from "@/components/admin/DishListView";
+
+type ViewMode = "card" | "list";
 
 export default function AdminCategoryPage() {
   const params = useParams<{ category: string }>();
   const category = params.category;
   const [dishes, setDishes] = useState<Dish[] | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<ViewMode>("list");
+  const cardRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   const isValidCategory = CATEGORIES.some((c) => c.slug === category);
 
@@ -99,26 +104,73 @@ export default function AdminCategoryPage() {
     setDishes((prev) => [...(prev ?? []), body.dish]);
   }
 
+  function handleEditFromList(id: string) {
+    setViewMode("card");
+    // カード表示に切り替わってDOMが描画された後にスクロールする
+    requestAnimationFrame(() => {
+      cardRefs.current[id]?.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+  }
+
   return (
     <div>
-      <h1 className="mb-8 text-center text-2xl font-semibold">{categoryLabel(category)}</h1>
+      <h1 className="mb-4 text-center text-2xl font-semibold">{categoryLabel(category)}</h1>
+
+      <div className="mb-6 flex justify-center gap-2">
+        <button
+          type="button"
+          onClick={() => setViewMode("list")}
+          className={`rounded px-3 py-1.5 text-sm font-medium ${
+            viewMode === "list"
+              ? "bg-neutral-900 text-white"
+              : "border border-neutral-300 text-neutral-600"
+          }`}
+        >
+          一覧表示
+        </button>
+        <button
+          type="button"
+          onClick={() => setViewMode("card")}
+          className={`rounded px-3 py-1.5 text-sm font-medium ${
+            viewMode === "card"
+              ? "bg-neutral-900 text-white"
+              : "border border-neutral-300 text-neutral-600"
+          }`}
+        >
+          カード表示
+        </button>
+      </div>
+
       {error && <p className="text-red-500">{error}</p>}
       {!dishes ? (
         <p className="text-neutral-500">読み込み中…</p>
+      ) : viewMode === "list" ? (
+        <>
+          <DishListView
+            dishes={dishes}
+            onReorder={handleReorder}
+            onArchive={handleArchive}
+            onEdit={handleEditFromList}
+          />
+          <div className="mt-4">
+            <AddDishCard category={category} onAdd={handleAdd} />
+          </div>
+        </>
       ) : (
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {dishes.map((dish, i) => (
-            <DishEditCard
-              key={dish.id}
-              dish={dish}
-              isFirst={i === 0}
-              isLast={i === dishes.length - 1}
-              onArchive={handleArchive}
-              onReorder={handleReorder}
-              onPhotoChange={handlePhotoChange}
-              onFieldSave={handleFieldSave}
-              onPhotoAdjust={handlePhotoAdjust}
-            />
+            <div key={dish.id} ref={(el) => { cardRefs.current[dish.id] = el; }}>
+              <DishEditCard
+                dish={dish}
+                isFirst={i === 0}
+                isLast={i === dishes.length - 1}
+                onArchive={handleArchive}
+                onReorder={handleReorder}
+                onPhotoChange={handlePhotoChange}
+                onFieldSave={handleFieldSave}
+                onPhotoAdjust={handlePhotoAdjust}
+              />
+            </div>
           ))}
           <AddDishCard category={category} onAdd={handleAdd} />
         </div>
