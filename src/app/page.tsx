@@ -35,14 +35,35 @@ async function getSlideshowDishes(): Promise<Dish[]> {
   return shuffle((data ?? []) as Dish[]);
 }
 
+async function getInstagramPostIds(): Promise<string[]> {
+  const supabase = getPublicSupabaseClient();
+  const { data, error } = await supabase
+    .from("site_content")
+    .select("instagram_post_ids")
+    .eq("id", "main")
+    .maybeSingle();
+
+  if (error || !data) {
+    // 失敗してもホームページ自体は表示したいので、空配列にしてInstagramFeed側の
+    // フォールバック(FALLBACK_POSTS)に任せます。
+    console.error("Failed to load instagram post ids:", error?.message);
+    return [];
+  }
+
+  return (data.instagram_post_ids ?? []) as string[];
+}
+
 export default async function Home() {
-  const dishes = await getSlideshowDishes();
+  const [dishes, instagramPostIds] = await Promise.all([
+    getSlideshowDishes(),
+    getInstagramPostIds(),
+  ]);
 
   return (
     <div className="flex min-h-full flex-col">
       <HomeHeader />
       <PhotoSlideshow dishes={dishes} />
-      <InstagramFeed />
+      <InstagramFeed postIds={instagramPostIds} />
       {/*
         予約フォームをそのまま埋め込んでいます(restaurant-reservation-ebon.vercel.app)。
         旧ホームページ(amour.pecori.jp)の本文埋め込みは廃止しました。

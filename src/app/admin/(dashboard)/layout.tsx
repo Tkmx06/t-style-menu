@@ -28,6 +28,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <Link href="/admin/archive" className="text-red-600 hover:text-red-700">
             過去のメニュー
           </Link>
+          <Link href="/admin/settings" className="text-neutral-600 hover:text-neutral-950 transition-colors">
+            サイト設定
+          </Link>
         </nav>
       </header>
       <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8">{children}</main>
