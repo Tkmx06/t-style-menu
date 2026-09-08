@@ -4,7 +4,7 @@ import { getPublicSupabaseClient } from "@/lib/supabase/publicClient";
 import type { Dish } from "@/lib/dish";
 import { DishCard } from "@/components/DishCard";
 import { HeroBanner } from "@/components/HeroBanner";
-import { MenuPdfBanner } from "@/components/MenuPdfBanner";
+import { MenuPdfEmbed } from "@/components/MenuPdfEmbed";
 
 export const dynamic = "force-dynamic";
 
@@ -40,9 +40,9 @@ export default async function CategoryPage(
       </h1>
       {/*
         「おすすめ」(PHOTO)と「Lunch」は写真ギャラリー/専用ページとして運用しているため、
-        価格入りの正式メニュー表(PDF)へのリンクはMENUの各カテゴリだけに表示します。
+        価格入りの正式メニュー表(PDF)の埋め込み表示はMENUの各カテゴリだけに表示します。
       */}
-      {category !== CATEGORIES[0].slug && category !== "lunch" && <MenuPdfBanner />}
+      {category !== CATEGORIES[0].slug && category !== "lunch" && <MenuPdfEmbed />}
       {dishes.length === 0 ? (
         <p className="text-neutral-500">まだ料理が登録されていません。</p>
       ) : (
