@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { TABS } from "@/components/HomeHeader";
+import { TABS } from "@/lib/homeNav";
 
 // 旧サイト(amour.pecori.jp/t_style)の一番下の黒いバー(サイトマップ+コピーライト)を、
 // 新しいヘッダーのタブ構成(MENU/LUNCH/PHOTO)に合わせて再現したフッターです。
