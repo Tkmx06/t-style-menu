@@ -1,11 +1,17 @@
 import Link from "next/link";
 import { SiteNav } from "@/components/SiteNav";
+import { TabBar } from "@/components/TabBar";
+import { HomeFooter } from "@/components/HomeFooter";
 import { CATEGORIES } from "@/lib/categories";
 
+// PHOTOタブなどからこのメニュー一覧セクションに来たとき、ホームに戻る手段が
+// 無かったため、ホーム画面と同じ黒いタブバー(上)と黒いフッターバー(下、HOMEリンク付き)を
+// ここにも貼り付けています。
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-full flex-col">
       <SiteNav />
+      <TabBar />
       <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8 sm:py-10">
         {children}
       </main>
@@ -18,6 +24,7 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
           ))}
         </nav>
       </footer>
+      <HomeFooter />
     </div>
   );
 }
