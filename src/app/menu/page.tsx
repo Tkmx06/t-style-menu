@@ -19,9 +19,17 @@ export const dynamic = "force-static";
 // コンテナの縦横比を元の写真(1599x861)と同じ比率にして、写真が一切トリミングされずに
 // そのまま全体表示されるようにしました。ボタン自体が白/赤の不透明に近い背景を
 // 持っているため、オーバーレイが無くても読みやすさは保たれます。
+//
+// 2026-09-08(続き): 「トリミングなしのまま、上の黒いバー(HOME/MENU/PHOTO)の
+// 右端とこの写真の右端を揃えてほしい」との要望で対応しました。原因は、このページの
+// 親コンテナ(src/app/menu/layout.tsxのmain)にpx-4の左右余白があるのに対し、
+// 黒いバー(TabBar)にはその余白が無く画面幅いっぱいに表示されていたため、写真だけ
+// 左右16pxずつ内側にずれて見えていたことです。-mx-4で親のpx-4を打ち消して写真を
+// 画面幅いっぱいに広げ(角丸も見た目が揃うよう廃止)、ボタン部分は元通りpx-4で
+// 内側に余白を保つようにしています。
 export default function MenuIndexPage() {
   return (
-    <div className="relative flex min-h-[240px] aspect-[1599/861] flex-col items-center justify-center gap-8 overflow-hidden rounded-2xl px-4 py-10 text-center sm:min-h-0">
+    <div className="relative -mx-4 flex min-h-[240px] aspect-[1599/861] flex-col items-center justify-center gap-8 overflow-hidden px-4 py-10 text-center sm:min-h-0">
       <Image
         src="/hero-banner.jpg"
         alt="t-style Gerichte"
