@@ -1,33 +1,42 @@
 import { HomeHeader } from "@/components/HomeHeader";
 import { PhotoSlideshow } from "@/components/PhotoSlideshow";
 import { InstagramFeed } from "@/components/InstagramFeed";
+import { HomeFooter } from "@/components/HomeFooter";
 import { getPublicSupabaseClient } from "@/lib/supabase/publicClient";
 import type { Dish } from "@/lib/dish";
 
 export const dynamic = "force-dynamic";
 
-async function getEmpfehlungDishes(): Promise<Dish[]> {
+function shuffle<T>(items: T[]): T[] {
+  const result = [...items];
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  return result;
+}
+
+async function getSlideshowDishes(): Promise<Dish[]> {
   const supabase = getPublicSupabaseClient();
+  // スライドショーは「おすすめ」カテゴリーだけでなく、公開中の全メニュー写真を
+  // 対象にランダムな順番で表示します。
   const { data, error } = await supabase
     .from("dishes")
     .select("*")
-    .eq("category", "empfehlung")
-    .eq("status", "published")
-    .order("sort_order", { ascending: true })
-    .order("created_at", { ascending: true });
+    .eq("status", "published");
 
   if (error) {
     // ホームページの表示自体は止めたくないので、失敗時は空配列にする
     // (スライドショーは非表示になるだけ)。
-    console.error("Failed to load empfehlung dishes for slideshow:", error.message);
+    console.error("Failed to load dishes for slideshow:", error.message);
     return [];
   }
 
-  return (data ?? []) as Dish[];
+  return shuffle((data ?? []) as Dish[]);
 }
 
 export default async function Home() {
-  const dishes = await getEmpfehlungDishes();
+  const dishes = await getSlideshowDishes();
 
   return (
     <div className="flex min-h-full flex-col">
@@ -35,17 +44,16 @@ export default async function Home() {
       <PhotoSlideshow dishes={dishes} />
       <InstagramFeed />
       {/*
-        下の本文は、これまで通り旧ホームページ(amour.pecori.jp)をそのまま
-        表示しています(next.config.ts の /legacy-home リライト経由)。
-        ヘッダー・スライドショーだけを新しくして、本文の作り直しは次の
-        ステップで行う想定です。
+        予約フォームをそのまま埋め込んでいます(restaurant-reservation-ebon.vercel.app)。
+        旧ホームページ(amour.pecori.jp)の本文埋め込みは廃止しました。
       */}
       <iframe
-        src="/legacy-home"
-        title="t-style ホーム"
+        src="https://restaurant-reservation-ebon.vercel.app/reservation"
+        title="ご予約"
         className="w-full flex-1 border-0"
-        style={{ minHeight: "1400px" }}
+        style={{ minHeight: "900px" }}
       />
+      <HomeFooter />
     </div>
   );
 }

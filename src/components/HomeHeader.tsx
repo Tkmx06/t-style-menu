@@ -1,22 +1,50 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { TABS } from "@/lib/homeNav";
 
 const RESERVATION_URL = "https://restaurant-reservation-ebon.vercel.app/reservation";
 const INSTAGRAM_URL = "https://www.instagram.com/t_style_frankfurt/";
-const MENU_URL = "https://amour.pecori.jp/t_style/food.html";
-// TODO: この店の「LUNCH」向けページがまだ存在しないため、旧サイトの該当リンクをそのまま暫定的に使っています。
-// 新しいランチページができたら、ここを差し替えてください。
-const LUNCH_URL = "https://amour.pecori.jp/t_style/drink.html";
 
-const TABS = [
-  { label: "MENU", href: MENU_URL },
-  { label: "LUNCH", href: LUNCH_URL },
-  { label: "PHOTO", href: "/menu/empfehlung" },
+type Lang = "de" | "en" | "ja";
+
+const LANGUAGES: { code: Lang; label: string }[] = [
+  { code: "de", label: "DE" },
+  { code: "en", label: "EN" },
+  { code: "ja", label: "JP" },
 ];
 
+const RESERVE_LABEL: Record<Lang, string> = {
+  de: "Jetzt reservieren",
+  en: "Reserve Now",
+  ja: "今すぐ予約する",
+};
+
 export function HomeHeader() {
+  const [lang, setLang] = useState<Lang>("de");
+
   return (
-    <header className="border-b border-neutral-200">
+    <header className="relative border-b border-neutral-200">
+      <div className="absolute right-4 top-4 flex items-center gap-1 sm:right-6 sm:top-6">
+        {LANGUAGES.map((l) => (
+          <button
+            key={l.code}
+            type="button"
+            onClick={() => setLang(l.code)}
+            aria-pressed={lang === l.code}
+            className={
+              lang === l.code
+                ? "rounded-full bg-neutral-900 px-2.5 py-1 text-[11px] font-semibold tracking-wide text-white"
+                : "rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide text-neutral-500 hover:text-neutral-900"
+            }
+          >
+            {l.label}
+          </button>
+        ))}
+      </div>
+
       <div className="mx-auto flex max-w-5xl flex-col items-center gap-4 px-4 py-6">
         <Link href="/" className="inline-block">
           <Image
@@ -36,7 +64,7 @@ export function HomeHeader() {
             rel="noopener noreferrer"
             className="inline-block rounded-full bg-red-600 px-8 py-3 text-sm font-semibold tracking-wide text-white shadow-sm transition-colors hover:bg-red-700 sm:text-base"
           >
-            今すぐ予約する
+            {RESERVE_LABEL[lang]}
           </a>
           <a
             href={INSTAGRAM_URL}
