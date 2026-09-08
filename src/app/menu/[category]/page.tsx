@@ -63,10 +63,17 @@ export default async function CategoryPage(
   // カテゴリ選択ボタンのヒーローセクションを追加しました。ページを開いた時点の
   // カテゴリ(初期設定ではUnsere Empfehlung=/menu/empfehlung)の料理写真を
   // ヒーローの下に一覧表示します。
+  //
+  // 2026-09-08(続き): 「Unsere Empfehlungの白文字を消して、その分もう少し写真を
+  // 広く使って元の写真の全体を表示してほしい」との要望で、見出し文字と黒い半透明
+  // レイヤーを廃止し、コンテナの縦横比を元の写真(1599x861)と同じ比率にして、
+  // 写真が一切トリミングされずにそのまま全体表示されるようにしました(MENUページと
+  // 同じ考え方)。カテゴリ選択ボタンは11個あり折り返すため、モバイル時の最低高さは
+  // MENUページより少し高めにしています。
   if (isPhotoCategory) {
     return (
       <div>
-        <div className="relative mb-10 flex min-h-[380px] flex-col items-center justify-center gap-8 overflow-hidden rounded-2xl px-4 py-14 text-center sm:min-h-[440px]">
+        <div className="relative mb-10 flex min-h-[300px] aspect-[1599/861] flex-col items-center justify-center gap-6 overflow-hidden rounded-2xl px-4 py-10 text-center sm:min-h-0">
           <Image
             src="/hero-banner.jpg"
             alt=""
@@ -75,11 +82,7 @@ export default async function CategoryPage(
             priority
             className="object-cover"
           />
-          <div className="absolute inset-0 bg-black/55" />
 
-          <h1 className="relative font-script text-5xl text-white drop-shadow-md">
-            {categoryLabel(category)}
-          </h1>
           <div className="relative flex flex-wrap justify-center gap-2 px-2">
             {PHOTO_CATEGORIES.map((c) => {
               const isActive = c.slug === category;
@@ -87,10 +90,10 @@ export default async function CategoryPage(
                 <Link
                   key={c.slug}
                   href={`/menu/${c.slug}`}
-                  className={`rounded-full px-4 py-2 text-sm font-semibold tracking-wide shadow-sm transition-colors ${
+                  className={`rounded-full px-4 py-2 text-sm font-semibold tracking-wide shadow-md transition-colors ${
                     isActive
                       ? "bg-red-600 text-white"
-                      : "bg-white/90 text-neutral-900 backdrop-blur hover:bg-white"
+                      : "bg-white/95 text-neutral-900 backdrop-blur hover:bg-white"
                   }`}
                 >
                   {c.label}
