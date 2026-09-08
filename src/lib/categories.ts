@@ -5,6 +5,7 @@ export type Category = {
 
 export const CATEGORIES: Category[] = [
   { slug: "empfehlung", label: "Unsere Empfehlung" },
+  { slug: "lunch", label: "Lunch" },
   { slug: "warme-gerichte", label: "Warme Gerichte" },
   { slug: "kalte-gerichte", label: "Kalte Gerichte" },
   { slug: "salate", label: "Salate" },
