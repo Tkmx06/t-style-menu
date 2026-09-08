@@ -24,18 +24,15 @@ declare global {
 //
 // 注意点(SnapWidgetとの違い):
 // ・自動で最新投稿に更新される「フィード」ではなく、指定した投稿を
-//   個別に埋め込む方式です。新しい投稿に差し替えたい場合は、下の
-//   POSTS配列のInstagram投稿ID(URLの /p/ の後ろの部分)を書き換える
-//   必要があります。
-// ・投稿IDはInstagramの投稿を開き、右上の「...」→「埋め込み」から
-//   コピーできるURL(https://www.instagram.com/p/XXXXXXXXXXX/)の
-//   XXXXXXXXXXXの部分です。
-const POSTS = [
-  "DMSg-YPIQQX", // 最新投稿(イベリコ丼)
-  "Dc0IKxsAeJS", // 9月ランチカレンダー
-];
+//   個別に埋め込む方式です。表示する投稿は管理画面(/admin/settings)から
+//   編集できます(データはsite_content.instagram_post_idsに保存)。
+//
+// FALLBACK_POSTSは、設定が未保存/取得エラー時のための最後の保険です。
+const FALLBACK_POSTS = ["DMSg-YPIQQX", "Dc0IKxsAeJS"];
 
-export function InstagramFeed() {
+export function InstagramFeed({ postIds }: { postIds?: string[] }) {
+  const posts = postIds && postIds.length > 0 ? postIds : FALLBACK_POSTS;
+
   // ページ遷移(クライアントサイドナビゲーション)で再訪した際、
   // embed.js は既に読み込み済みでonLoadが発火しないことがあるため、
   // マウント時にも明示的に process() を呼んで埋め込みを描画させます。
@@ -46,8 +43,8 @@ export function InstagramFeed() {
   return (
     <section className="flex flex-col items-center gap-4 bg-white px-4 py-12">
       <h2 className="font-script text-3xl text-neutral-800">Instagram</h2>
-      <div className="mx-auto flex w-full max-w-[700px] flex-col items-center gap-6 md:flex-row md:items-start md:justify-center">
-        {POSTS.map((shortcode) => (
+      <div className="mx-auto flex w-full max-w-[700px] flex-col items-center gap-6 md:flex-row md:flex-wrap md:items-start md:justify-center">
+        {posts.map((shortcode) => (
           <blockquote
             key={shortcode}
             className="instagram-media"
