@@ -1,8 +1,10 @@
 import type { Dish } from "@/lib/dish";
 
-// 「menu-pages」カテゴリ専用の表示コンポーネント。他のカテゴリ(DishCard)と違い、
-// 料理名・説明は表示せず、管理画面(/admin/menu-pages)に登録された画像
-// (メニュー表の各ページ)を、切り抜きせず上から順にそのまま並べます。
+// 「menu-pages」(DINNER)と「lunch」(LUNCH)カテゴリ共通の表示コンポーネント。
+// 他のカテゴリ(DishCard)と違い、料理名・説明は表示せず、管理画面
+// (/admin/menu-pages, /admin/lunch)に登録された画像を、切り抜きせず上から
+// 順にそのまま並べます(2026-09-09: 「LUNCHもDINNERと全く同じ仕様にしたい」
+// との指摘を受け、lunchでも共通利用するように変更)。
 //
 // 画像は管理者が自由な縦横比の写真をアップロードできるため、next/image の
 // width/height 固定ではなく、素の <img> + h-auto でブラウザに実際の縦横比を
