@@ -33,11 +33,33 @@ export default function ArchivePage() {
     setBusyId(null);
   }
 
+  // 2026-09-09: 「復元ボタンしかないので削除ボタンも追加してほしい」との要望への対応。
+  // こちらは元に戻せない完全削除のため、誤操作防止にconfirm()で一度確認しています。
+  async function handleDelete(id: string, name: string) {
+    if (!window.confirm(`「${name}」を完全に削除します。この操作は元に戻せません。よろしいですか？`)) {
+      return;
+    }
+    setBusyId(id);
+    setError(null);
+    try {
+      const res = await fetch(`/api/admin/dishes/${id}`, { method: "DELETE" });
+      const body = await readJsonResponse<{ error?: string }>(res);
+      if (!res.ok) {
+        throw new Error(body.error ?? "削除に失敗しました。");
+      }
+      setDishes((prev) => prev?.filter((d) => d.id !== id) ?? prev);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "削除に失敗しました。");
+    } finally {
+      setBusyId(null);
+    }
+  }
+
   return (
     <div>
       <h1 className="mb-2 text-center text-2xl font-semibold">過去のメニュー</h1>
       <p className="mb-8 text-center text-sm text-neutral-500">
-        削除した料理はここに記憶されます。「復元」を押すと、そのカテゴリの一覧に再度表示されます。
+        削除した料理はここに記憶されます。「復元する」を押すと、そのカテゴリの一覧に再度表示されます。「削除する」を押すと、写真ごと完全に削除され元に戻せません。
       </p>
       {error && <p className="mb-4 text-center text-red-500">{error}</p>}
       {!dishes ? (
@@ -56,14 +78,24 @@ export default function ArchivePage() {
               {dish.description && (
                 <p className="text-center text-sm text-neutral-400">{dish.description}</p>
               )}
-              <button
-                type="button"
-                disabled={busyId === dish.id}
-                onClick={() => handleRestore(dish.id)}
-                className="rounded bg-red-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
-              >
-                {busyId === dish.id ? "復元中…" : "復元する"}
-              </button>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  disabled={busyId === dish.id}
+                  onClick={() => handleRestore(dish.id)}
+                  className="flex-1 rounded bg-red-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
+                >
+                  {busyId === dish.id ? "処理中…" : "復元する"}
+                </button>
+                <button
+                  type="button"
+                  disabled={busyId === dish.id}
+                  onClick={() => handleDelete(dish.id, dish.name)}
+                  className="flex-1 rounded border border-neutral-300 px-3 py-1.5 text-sm font-medium text-neutral-600 hover:bg-neutral-100 disabled:opacity-50"
+                >
+                  {busyId === dish.id ? "処理中…" : "削除する"}
+                </button>
+              </div>
             </div>
           ))}
         </div>
