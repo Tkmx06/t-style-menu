@@ -75,7 +75,17 @@ export default async function CategoryPage(
 
   // MENUタブ(menu-pages)は、料理写真のカード一覧ではなく、正式なメニュー表の
   // 各ページ画像を上から順にそのまま並べる専用レイアウトを使います。
-  if (category === MENU_PAGES_SLUG) {
+  //
+  // 2026-09-09: 「LUNCHもDINNER(正式メニュー表)と全く同じ仕様にしてほしい。
+  // 今のLUNCHはサイズ・向きに関わらず写真がトリミングされてしまう」との指摘を
+  // 受け、DishCardのカード一覧(4:3にトリミングして表示)をやめ、lunchも
+  // menu-pagesと同じMenuPagesGallery(トリミングせず元の縦横比のまま上から
+  // 順に並べる)を使うようにしました。見出しはcategoryLabel(category)が
+  // カテゴリごとに「Dinner」「Lunch」を自動で出し分けるため、これだけで
+  // 見出しの文字も正しく切り替わります。中身(登録内容)は既存のまま、
+  // 表示レイアウトだけをDINNERと共通化しています。
+  const isGalleryCategory = category === MENU_PAGES_SLUG || category === "lunch";
+  if (isGalleryCategory) {
     return (
       <div>
         <h1 className="font-script mb-8 text-center text-5xl text-neutral-800">
@@ -83,7 +93,7 @@ export default async function CategoryPage(
         </h1>
         {dishes.length === 0 ? (
           <p className="text-center text-neutral-500">
-            まだメニュー表のページが登録されていません。
+            まだ写真が登録されていません。
           </p>
         ) : (
           <MenuPagesGallery dishes={dishes} />
@@ -192,22 +202,7 @@ export default async function CategoryPage(
     );
   }
 
-  // Lunch(MENUページのLUNCHボタンから遷移)は、PHOTOページのカテゴリ選択には
-  // 含めないため、これまで通りシンプルな見出し+一覧のみのレイアウトです。
-  return (
-    <div>
-      <h1 className="font-script mb-8 text-center text-5xl text-neutral-800">
-        {categoryLabel(category)}
-      </h1>
-      {dishes.length === 0 ? (
-        <p className="text-neutral-500">まだ料理が登録されていません。</p>
-      ) : (
-        <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-3">
-          {dishes.map((dish) => (
-            <DishCard key={dish.id} dish={dish} />
-          ))}
-        </div>
-      )}
-    </div>
-  );
+  // menu-pages・lunch・PHOTO_CATEGORIESの3グループで全カテゴリを網羅しているため、
+  // ここには到達しませんが、型のためにフォールバックを残しています。
+  notFound();
 }

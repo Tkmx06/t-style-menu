@@ -24,13 +24,23 @@ export async function GET(request: NextRequest) {
   return NextResponse.json({ dishes: data });
 }
 
-// 「menu-pages」(正式なメニュー表PDFの各ページ画像)は、他のカテゴリと違って
-// 料理名を持たない単なるページ画像です。表示側(MenuPagesGallery)も名前を
-// 表示しないため、管理画面での追加時に「料理名」入力を必須にせず、
-// 「メニュー表 Nページ目」という名前を並び順から自動生成します。
+// 「menu-pages」(正式なメニュー表PDFの各ページ画像、管理画面上は「Dinner」と表示)は、
+// 他のカテゴリと違って料理名を持たない単なるページ画像です。表示側
+// (MenuPagesGallery)も名前を表示しないため、管理画面での追加時に「料理名」入力を
+// 必須にせず、「メニュー表 Nページ目」という名前を並び順から自動生成します。
 // (2026-09-08: 「MENUのPDFに写真を追加しようとすると料理の写真みたいな追加の
 // 設定になっていて保存できない」との指摘を受けて対応しました。)
-const MENU_PAGES_CATEGORY = "menu-pages";
+//
+// 「lunch」も2026-09-09、「LUNCHもDINNERと同じ仕様にしたい」との指摘を受けて
+// 同様の扱いに変更しました。名前はdishesテーブル上は必須(NOT NULL)のため
+// 「ランチ写真 N」という名前を自動生成しますが、公開ページ(/menu/lunch)側は
+// DishCardのshowName=falseで名前ラベル自体を表示しないため、この名前は
+// 管理・並び替え用の内部的なものです。
+const NO_NAME_CATEGORIES = ["menu-pages", "lunch"];
+const AUTO_NAME_TEMPLATE: Record<string, (order: number) => string> = {
+  "menu-pages": (order) => `メニュー表 ${order}ページ目`,
+  lunch: (order) => `ランチ写真 ${order}`,
+};
 
 export async function POST(request: NextRequest) {
   const formData = await request.formData();
@@ -46,8 +56,8 @@ export async function POST(request: NextRequest) {
   ) {
     return NextResponse.json({ error: "カテゴリが不正です。" }, { status: 400 });
   }
-  const isMenuPages = category === MENU_PAGES_CATEGORY;
-  if (!isMenuPages && (typeof name !== "string" || name.trim() === "")) {
+  const isNoNameCategory = NO_NAME_CATEGORIES.includes(category);
+  if (!isNoNameCategory && (typeof name !== "string" || name.trim() === "")) {
     return NextResponse.json({ error: "料理名を入力してください。" }, { status: 400 });
   }
   if (!(photo instanceof File) || photo.size === 0) {
@@ -82,8 +92,8 @@ export async function POST(request: NextRequest) {
     .from(DISH_PHOTOS_BUCKET)
     .getPublicUrl(path);
 
-  const insertName = isMenuPages
-    ? `メニュー表 ${nextSortOrder + 1}ページ目`
+  const insertName = isNoNameCategory
+    ? AUTO_NAME_TEMPLATE[category](nextSortOrder + 1)
     : (name as string).trim();
 
   const { data: inserted, error: insertError } = await supabase
