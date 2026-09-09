@@ -56,6 +56,11 @@ export default function AdminCategoryPage() {
     load();
   }
 
+  // 2026-09-09: 以前はres.json()の失敗(res.okかどうかのチェックより先に実行)や
+  // fetch自体の失敗をここで無視していたため、アップロードが失敗しても呼び出し元
+  // (DishEditCard)には何も伝わらず、「処理中…」の表示だけが残ってしまう不具合が
+  // ありました。エラーを例外としてthrowし、呼び出し元でtry/catch/finallyにより
+  // 必ず処理中表示が解除され、エラーメッセージが表示されるようにしています。
   async function handlePhotoChange(id: string, file: File) {
     const compressed = await compressImageFile(file);
     const formData = new FormData();

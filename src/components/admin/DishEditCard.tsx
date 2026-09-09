@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import Image from "next/image";
 import type { Dish } from "@/lib/dish";
 import { dishImageStyle } from "@/lib/dishImageStyle";
+import { resizeImageFile } from "@/lib/resizeImageFile";
 import { PhotoAdjustPanel } from "./PhotoAdjustPanel";
 
 export function DishEditCard({
