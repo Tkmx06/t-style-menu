@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { resizeImageFile } from "@/lib/resizeImageFile";
 
 export function AddDishCard({
   category,
@@ -33,6 +34,13 @@ export function AddDishCard({
     const formData = new FormData(e.currentTarget);
     formData.set("category", category);
     try {
+      // 2026-09-09: iPhoneの写真は数MB〜10MB超になることがあり、そのまま
+      // 送信するとサーバー側のリクエストサイズ上限に引っかかって失敗する
+      // ことがあるため、送信前に縮小しています(詳細はsrc/lib/resizeImageFile.ts)。
+      const photo = formData.get("photo");
+      if (photo instanceof File && photo.size > 0) {
+        formData.set("photo", await resizeImageFile(photo));
+      }
       await onAdd(formData);
       setOpen(false);
       e.currentTarget.reset();
