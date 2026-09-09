@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { extractInstagramPostId } from "@/lib/instagramPostId";
+import { readJsonResponse } from "@/lib/fetchJson";
 
 export default function AdminSettingsPage() {
   const [postInputs, setPostInputs] = useState<string[]>([""]);
@@ -13,12 +14,16 @@ export default function AdminSettingsPage() {
   useEffect(() => {
     async function load() {
       const res = await fetch("/api/admin/settings");
-      const body = await res.json();
-      if (res.ok) {
-        const ids: string[] = body.instagramPostIds ?? [];
-        setPostInputs(ids.length > 0 ? ids : [""]);
-      } else {
-        setError(body.error ?? "読み込みに失敗しました。");
+      try {
+        const body = await readJsonResponse<{ instagramPostIds?: string[]; error?: string }>(res);
+        if (res.ok) {
+          const ids: string[] = body.instagramPostIds ?? [];
+          setPostInputs(ids.length > 0 ? ids : [""]);
+        } else {
+          setError(body.error ?? "読み込みに失敗しました。");
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "読み込みに失敗しました。");
       }
       setLoading(false);
     }
@@ -51,14 +56,18 @@ export default function AdminSettingsPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ instagramPostIds: ids }),
     });
-    const body = await res.json();
 
-    if (res.ok) {
-      const saved: string[] = body.instagramPostIds ?? [];
-      setPostInputs(saved.length > 0 ? saved : [""]);
-      setMessage("保存しました。");
-    } else {
-      setError(body.error ?? "保存に失敗しました。");
+    try {
+      const body = await readJsonResponse<{ instagramPostIds?: string[]; error?: string }>(res);
+      if (res.ok) {
+        const saved: string[] = body.instagramPostIds ?? [];
+        setPostInputs(saved.length > 0 ? saved : [""]);
+        setMessage("保存しました。");
+      } else {
+        setError(body.error ?? "保存に失敗しました。");
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "保存に失敗しました。");
     }
     setSaving(false);
   }
