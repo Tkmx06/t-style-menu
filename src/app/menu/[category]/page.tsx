@@ -11,6 +11,44 @@ export const dynamic = "force-dynamic";
 
 const MENU_PAGES_SLUG = "menu-pages";
 
+// 2026-09-09: モバイル(sm未満)でのカテゴリピルボタンの並び順。全11個を均等な
+// 3列グリッドにすると、ラベルの長さがバラバラなため行によって折り返し方が異なり、
+// 行の高さや余白がガタついて見える問題があったため、試作ツールで実際にドラッグ
+// して確認しながら、長いラベル同士を2個の行に、短いラベルを3個の行にまとめる
+// 配置に変更しました。
+const PHOTO_ROWS: string[][] = [
+  ["empfehlung", "sushi-sashimi"],
+  ["warme-gerichte", "kalte-gerichte", "salate"],
+  ["fischspeisen", "fleischspeisen", "tempura"],
+  ["reisgerichte", "nudeln", "dessert"],
+];
+
+function CategoryPill({
+  slug,
+  label,
+  activeSlug,
+  className,
+}: {
+  slug: string;
+  label: string;
+  activeSlug: string;
+  className: string;
+}) {
+  const isActive = slug === activeSlug;
+  return (
+    <Link
+      href={`/menu/${slug}`}
+      className={`${className} ${
+        isActive
+          ? "bg-red-600 text-white"
+          : "bg-white/95 text-neutral-900 backdrop-blur hover:bg-white"
+      }`}
+    >
+      {label}
+    </Link>
+  );
+}
+
 export default async function CategoryPage(
   props: PageProps<"/menu/[category]">,
 ) {
@@ -79,10 +117,24 @@ export default async function CategoryPage(
   // 指摘を受け、MENUページと同じ原因(min-heightとaspect-ratioの組み合わせで、画面が
   // 狭い時にブラウザが幅の方をmin-height基準で逆算して広げてしまう挙動)だったため、
   // 同じ対処としてmin-heightを廃止し、常にアスペクト比だけで高さを決めるようにしました。
+  //
+  // 2026-09-09: 「PHOTO画面の選択肢(カテゴリピルボタン)の上の2つが見切れてしまう」との
+  // 指摘への対応。写真の縦横比(1599:861)は幅に対してかなり平べったいため、iPhoneのような
+  // 狭い画面では写真の高さ自体が小さくなり(例:幅390pxで高さ約210px)、カテゴリが11個と
+  // 多いことも重なって、真ん中揃えで並んだボタンが上下にコンテナからはみ出し、
+  // overflow-hiddenで見切れていました。sm以上(タブレット・PC)は元々問題がなかったため、
+  // これまで通りの折り返し表示のままです。
+  //
+  // 2026-09-09(続き): 見切れは解消したものの、モバイルを均等な3列グリッドにしたところ
+  // 「ラベルの長さによって折り返し方がバラバラで、文字サイズや上下の余白のバランスが
+  // 悪く見える」との指摘を受けました。試作ツール(行ごとにドラッグしてラベルの
+  // 組み合わせ・文字サイズ・余白を確認できるプロトタイプ)で実際に確認しながら
+  // 決めた、長いラベル同士を2列・短いラベルを3列にまとめた行の組み合わせに変更し、
+  // 文字サイズと余白もそのとき確認した値に合わせています。
   if (isPhotoCategory) {
     return (
       <div>
-        <div className="relative -mx-4 mb-10 flex aspect-[1599/861] flex-col items-center justify-center gap-6 overflow-hidden px-4 py-10 text-center">
+        <div className="relative -mx-4 mb-10 flex aspect-[1599/861] flex-col items-center justify-center gap-6 overflow-hidden px-4 py-[11px] text-center sm:py-10">
           <Image
             src="/hero-banner.jpg"
             alt=""
@@ -92,23 +144,38 @@ export default async function CategoryPage(
             className="object-cover"
           />
 
-          <div className="relative flex flex-wrap justify-center gap-2 px-2">
-            {PHOTO_CATEGORIES.map((c) => {
-              const isActive = c.slug === category;
-              return (
-                <Link
-                  key={c.slug}
-                  href={`/menu/${c.slug}`}
-                  className={`rounded-full px-4 py-2 text-sm font-semibold tracking-wide shadow-md transition-colors ${
-                    isActive
-                      ? "bg-red-600 text-white"
-                      : "bg-white/95 text-neutral-900 backdrop-blur hover:bg-white"
-                  }`}
-                >
-                  {c.label}
-                </Link>
-              );
-            })}
+          {/* モバイル(sm未満): 長短のラベルを組み合わせた行ごとのカスタム配置 */}
+          <div className="relative flex w-full flex-col gap-[9px] px-2 sm:hidden">
+            {PHOTO_ROWS.map((row, i) => (
+              <div key={i} className="flex gap-4">
+                {row.map((slug) => {
+                  const c = PHOTO_CATEGORIES.find((c) => c.slug === slug);
+                  if (!c) return null;
+                  return (
+                    <CategoryPill
+                      key={c.slug}
+                      slug={c.slug}
+                      label={c.label}
+                      activeSlug={category}
+                      className="flex-1 rounded-full px-1 py-2 text-center text-[10.5px] font-semibold leading-tight tracking-wide shadow-md transition-colors"
+                    />
+                  );
+                })}
+              </div>
+            ))}
+          </div>
+
+          {/* sm以上(タブレット・PC): 元々問題がなかった折り返し表示のまま */}
+          <div className="relative hidden gap-2 sm:flex sm:w-auto sm:flex-wrap sm:justify-center">
+            {PHOTO_CATEGORIES.map((c) => (
+              <CategoryPill
+                key={c.slug}
+                slug={c.slug}
+                label={c.label}
+                activeSlug={category}
+                className="rounded-full px-4 py-2 text-center text-sm font-semibold leading-tight tracking-wide shadow-md transition-colors"
+              />
+            ))}
           </div>
         </div>
 
