@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAdminSupabaseClient } from "@/lib/supabase/adminClient";
+import { getAdminSupabaseClient, DISH_PHOTOS_BUCKET } from "@/lib/supabase/adminClient";
 
 export async function PATCH(
   request: NextRequest,
@@ -48,4 +48,38 @@ export async function PATCH(
   }
 
   return NextResponse.json({ dish: data });
+}
+
+// 2026-09-09: 過去のメニュー(アーカイブ)画面に「完全に削除する」ボタンを追加するための
+// エンドポイント。archiveは status を "archived" にするだけの論理削除(復元可能)ですが、
+// こちらはSupabaseの行と、紐づく写真(Storage)を完全に削除する不可逆な操作です。
+export async function DELETE(
+  _request: NextRequest,
+  { params }: RouteContext<"/api/admin/dishes/[id]">,
+) {
+  const { id } = await params;
+  const supabase = getAdminSupabaseClient();
+
+  const { data: existing, error: fetchError } = await supabase
+    .from("dishes")
+    .select("image_url")
+    .eq("id", id)
+    .single();
+
+  if (fetchError || !existing) {
+    return NextResponse.json({ error: "料理が見つかりません。" }, { status: 404 });
+  }
+
+  const { error: deleteError } = await supabase.from("dishes").delete().eq("id", id);
+
+  if (deleteError) {
+    return NextResponse.json({ error: deleteError.message }, { status: 500 });
+  }
+
+  const path = existing.image_url?.split(`/${DISH_PHOTOS_BUCKET}/`)[1];
+  if (path) {
+    await supabase.storage.from(DISH_PHOTOS_BUCKET).remove([path]);
+  }
+
+  return NextResponse.json({ ok: true });
 }
