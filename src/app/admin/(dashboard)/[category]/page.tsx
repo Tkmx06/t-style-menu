@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useParams } from "next/navigation";
 import { CATEGORIES, categoryLabel } from "@/lib/categories";
 import { notFound } from "next/navigation";
@@ -8,6 +8,8 @@ import type { Dish } from "@/lib/dish";
 import { DishEditCard } from "@/components/admin/DishEditCard";
 import { AddDishCard } from "@/components/admin/AddDishCard";
 import { DishListView } from "@/components/admin/DishListView";
+import { readJsonResponse } from "@/lib/fetchJson";
+import { compressImageFile } from "@/lib/compressImage";
 
 type ViewMode = "card" | "list";
 
@@ -21,20 +23,20 @@ export default function AdminCategoryPage() {
 
   const isValidCategory = CATEGORIES.some((c) => c.slug === category);
 
-  async function load() {
+  const load = useCallback(async () => {
     const res = await fetch(`/api/admin/dishes?category=${category}`);
-    const body = await res.json();
+    const body = await readJsonResponse<{ dishes?: Dish[]; error?: string }>(res);
     if (!res.ok) {
       setError(body.error ?? "読み込みに失敗しました。");
       return;
     }
-    setDishes(body.dishes);
-  }
+    setDishes(body.dishes ?? []);
+  }, [category]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- カテゴリ切り替え時に一覧データを取得するための意図的な呼び出しです
     if (isValidCategory) load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [category]);
+  }, [isValidCategory, load]);
 
   if (!isValidCategory) {
     notFound();
@@ -60,35 +62,19 @@ export default function AdminCategoryPage() {
   // ありました。エラーを例外としてthrowし、呼び出し元でtry/catch/finallyにより
   // 必ず処理中表示が解除され、エラーメッセージが表示されるようにしています。
   async function handlePhotoChange(id: string, file: File) {
+    const compressed = await compressImageFile(file);
     const formData = new FormData();
-    formData.set("photo", file);
-    let res: Response;
-    try {
-      res = await fetch(`/api/admin/dishes/${id}/photo`, {
-        method: "POST",
-        body: formData,
-      });
-    } catch {
-      throw new Error("通信に失敗しました。電波の良い場所でもう一度お試しください。");
-    }
-
-    let body: { dish?: Dish; error?: string };
-    try {
-      body = await res.json();
-    } catch {
-      throw new Error(
-        res.status === 413
-          ? "写真のファイルサイズが大きすぎます。もう一度お試しください。"
-          : "写真の変更に失敗しました。もう一度お試しください。",
-      );
-    }
-
+    formData.set("photo", compressed);
+    const res = await fetch(`/api/admin/dishes/${id}/photo`, {
+      method: "POST",
+      body: formData,
+    });
+    const body = await readJsonResponse<{ dish?: Dish; error?: string }>(res);
     if (!res.ok || !body.dish) {
       throw new Error(body.error ?? "写真の変更に失敗しました。");
     }
-
-    const updatedDish = body.dish;
-    setDishes((prev) => prev?.map((d) => (d.id === id ? updatedDish : d)) ?? prev);
+    const dish = body.dish;
+    setDishes((prev) => prev?.map((d) => (d.id === id ? dish : d)) ?? prev);
   }
 
   async function handleFieldSave(id: string, field: "name" | "description", value: string) {
@@ -97,9 +83,10 @@ export default function AdminCategoryPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ [field]: value }),
     });
-    const body = await res.json();
-    if (res.ok) {
-      setDishes((prev) => prev?.map((d) => (d.id === id ? body.dish : d)) ?? prev);
+    const body = await readJsonResponse<{ dish?: Dish; error?: string }>(res);
+    if (res.ok && body.dish) {
+      const dish = body.dish;
+      setDishes((prev) => prev?.map((d) => (d.id === id ? dish : d)) ?? prev);
     }
   }
 
@@ -115,27 +102,23 @@ export default function AdminCategoryPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ focal_x: focalX, focal_y: focalY, zoom, rotation }),
     });
-    const body = await res.json();
-    if (res.ok) {
-      setDishes((prev) => prev?.map((d) => (d.id === id ? body.dish : d)) ?? prev);
+    const body = await readJsonResponse<{ dish?: Dish; error?: string }>(res);
+    if (res.ok && body.dish) {
+      const dish = body.dish;
+      setDishes((prev) => prev?.map((d) => (d.id === id ? dish : d)) ?? prev);
     }
   }
 
   async function handleAdd(formData: FormData) {
-    const res = await fetch("/api/admin/dishes", { method: "POST", body: formData });
-    let body: { dish?: Dish; error?: string };
-    try {
-      body = await res.json();
-    } catch {
-      throw new Error(
-        res.status === 413
-          ? "写真のファイルサイズが大きすぎます。もう一度お試しください。"
-          : "登録に失敗しました。もう一度お試しください。",
-      );
+    const photo = formData.get("photo");
+    if (photo instanceof File) {
+      formData.set("photo", await compressImageFile(photo));
     }
+    const res = await fetch("/api/admin/dishes", { method: "POST", body: formData });
+    const body = await readJsonResponse<{ dish?: Dish; error?: string }>(res);
     if (!res.ok || !body.dish) throw new Error(body.error ?? "登録に失敗しました。");
-    const newDish = body.dish;
-    setDishes((prev) => [...(prev ?? []), newDish]);
+    const dish = body.dish;
+    setDishes((prev) => [...(prev ?? []), dish]);
   }
 
   function handleEditFromList(id: string) {

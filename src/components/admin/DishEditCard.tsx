@@ -35,9 +35,11 @@ export function DishEditCard({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const [adjusting, setAdjusting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function handleRotate(direction: "left" | "right") {
     setBusy(true);
+    setError(null);
     try {
       const res = await fetch(dish.image_url);
       const blob = await res.blob();
@@ -55,29 +57,7 @@ export function DishEditCard({
       const file = new File([rotatedBlob], "rotated.jpg", { type: "image/jpeg" });
       await onPhotoChange(dish.id, file);
     } catch (err) {
-      alert(err instanceof Error ? err.message : "回転に失敗しました。もう一度お試しください。");
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  // 2026-09-09: 「iPhoneから画像を追加しようとするとこの画面から進まない」との
-  // 不具合報告への対応。従来はonPhotoChangeの失敗時にsetBusy(false)へ到達できず、
-  // 「処理中…」の表示が消えなくなっていました(詳細はsrc/lib/resizeImageFile.tsの
-  // コメント参照)。try/catch/finallyで必ずbusyを解除し、失敗時はメッセージを
-  // 表示するようにした上で、送信前に写真を縮小してアップロード自体が失敗しにくい
-  // ようにしています。
-  async function handlePhotoInputChange(file: File) {
-    setBusy(true);
-    try {
-      const resized = await resizeImageFile(file);
-      await onPhotoChange(dish.id, resized);
-    } catch (err) {
-      alert(
-        err instanceof Error
-          ? err.message
-          : "写真の変更に失敗しました。もう一度お試しください。",
-      );
+      setError(err instanceof Error ? err.message : "回転に失敗しました。");
     } finally {
       setBusy(false);
     }
@@ -193,12 +173,22 @@ export function DishEditCard({
           onClick={(e) => e.stopPropagation()}
           onChange={async (e) => {
             const file = e.target.files?.[0];
-            e.target.value = "";
             if (!file) return;
-            await handlePhotoInputChange(file);
+            setBusy(true);
+            setError(null);
+            try {
+              await onPhotoChange(dish.id, file);
+            } catch (err) {
+              setError(err instanceof Error ? err.message : "写真の変更に失敗しました。");
+            } finally {
+              setBusy(false);
+              e.target.value = "";
+            }
           }}
         />
       </div>
+
+      {error && <p className="text-xs text-red-500">{error}</p>}
 
       {adjusting && (
         <PhotoAdjustPanel

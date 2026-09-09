@@ -4,18 +4,25 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { categoryLabel } from "@/lib/categories";
 import type { Dish } from "@/lib/dish";
+import { readJsonResponse } from "@/lib/fetchJson";
 
 export default function ArchivePage() {
   const [dishes, setDishes] = useState<Dish[] | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   async function load() {
     const res = await fetch("/api/admin/archive");
-    const body = await res.json();
-    setDishes(body.dishes ?? []);
+    try {
+      const body = await readJsonResponse<{ dishes?: Dish[] }>(res);
+      setDishes(body.dishes ?? []);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "読み込みに失敗しました。");
+    }
   }
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- マウント時に一覧データを取得するための意図的な呼び出しです
     load();
   }, []);
 
@@ -32,8 +39,9 @@ export default function ArchivePage() {
       <p className="mb-8 text-center text-sm text-neutral-500">
         削除した料理はここに記憶されます。「復元」を押すと、そのカテゴリの一覧に再度表示されます。
       </p>
+      {error && <p className="mb-4 text-center text-red-500">{error}</p>}
       {!dishes ? (
-        <p className="text-neutral-500">読み込み中…</p>
+        error ? null : <p className="text-neutral-500">読み込み中…</p>
       ) : dishes.length === 0 ? (
         <p className="text-center text-neutral-500">過去のメニューはまだありません。</p>
       ) : (
