@@ -24,6 +24,14 @@ export async function GET(request: NextRequest) {
   return NextResponse.json({ dishes: data });
 }
 
+// 「menu-pages」(正式なメニュー表PDFの各ページ画像)は、他のカテゴリと違って
+// 料理名を持たない単なるページ画像です。表示側(MenuPagesGallery)も名前を
+// 表示しないため、管理画面での追加時に「料理名」入力を必須にせず、
+// 「メニュー表 Nページ目」という名前を並び順から自動生成します。
+// (2026-09-08: 「MENUのPDFに写真を追加しようとすると料理の写真みたいな追加の
+// 設定になっていて保存できない」との指摘を受けて対応しました。)
+const MENU_PAGES_CATEGORY = "menu-pages";
+
 export async function POST(request: NextRequest) {
   const formData = await request.formData();
 
@@ -38,7 +46,8 @@ export async function POST(request: NextRequest) {
   ) {
     return NextResponse.json({ error: "カテゴリが不正です。" }, { status: 400 });
   }
-  if (typeof name !== "string" || name.trim() === "") {
+  const isMenuPages = category === MENU_PAGES_CATEGORY;
+  if (!isMenuPages && (typeof name !== "string" || name.trim() === "")) {
     return NextResponse.json({ error: "料理名を入力してください。" }, { status: 400 });
   }
   if (!(photo instanceof File) || photo.size === 0) {
@@ -73,11 +82,15 @@ export async function POST(request: NextRequest) {
     .from(DISH_PHOTOS_BUCKET)
     .getPublicUrl(path);
 
+  const insertName = isMenuPages
+    ? `メニュー表 ${nextSortOrder + 1}ページ目`
+    : (name as string).trim();
+
   const { data: inserted, error: insertError } = await supabase
     .from("dishes")
     .insert({
       category,
-      name: name.trim(),
+      name: insertName,
       description:
         typeof description === "string" && description.trim() !== ""
           ? description.trim()
