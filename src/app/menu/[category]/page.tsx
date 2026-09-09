@@ -79,10 +79,19 @@ export default async function CategoryPage(
   // 指摘を受け、MENUページと同じ原因(min-heightとaspect-ratioの組み合わせで、画面が
   // 狭い時にブラウザが幅の方をmin-height基準で逆算して広げてしまう挙動)だったため、
   // 同じ対処としてmin-heightを廃止し、常にアスペクト比だけで高さを決めるようにしました。
+  //
+  // 2026-09-09: 「PHOTO画面の選択肢(カテゴリピルボタン)の上の2つが見切れてしまう」との
+  // 指摘への対応。写真の縦横比(1599:861)は幅に対してかなり平べったいため、iPhoneのような
+  // 狭い画面では写真の高さ自体が小さくなり(例:幅390pxで高さ約210px)、カテゴリが11個と
+  // 多いことも重なって、真ん中揃えで並んだボタンが上下にコンテナからはみ出し、
+  // overflow-hiddenで見切れていました。モバイル(sm未満)ではボタンを3列固定のグリッドに
+  // し、文字・余白・行間を詰めて必要な高さを抑え、あわせてセクション自体の上下余白も
+  // 減らして表示できる高さを確保しています。sm以上(タブレット・PC)は元々問題が
+  // なかったため、これまで通りの折り返し表示のままです。
   if (isPhotoCategory) {
     return (
       <div>
-        <div className="relative -mx-4 mb-10 flex aspect-[1599/861] flex-col items-center justify-center gap-6 overflow-hidden px-4 py-10 text-center">
+        <div className="relative -mx-4 mb-10 flex aspect-[1599/861] flex-col items-center justify-center gap-6 overflow-hidden px-4 py-4 text-center sm:py-10">
           <Image
             src="/hero-banner.jpg"
             alt=""
@@ -92,14 +101,14 @@ export default async function CategoryPage(
             className="object-cover"
           />
 
-          <div className="relative flex flex-wrap justify-center gap-2 px-2">
+          <div className="relative grid w-full grid-cols-3 justify-items-center gap-1.5 px-2 sm:flex sm:w-auto sm:flex-wrap sm:justify-center sm:gap-2">
             {PHOTO_CATEGORIES.map((c) => {
               const isActive = c.slug === category;
               return (
                 <Link
                   key={c.slug}
                   href={`/menu/${c.slug}`}
-                  className={`rounded-full px-4 py-2 text-sm font-semibold tracking-wide shadow-md transition-colors ${
+                  className={`w-full rounded-full px-2 py-1 text-center text-[11px] font-semibold leading-tight tracking-wide shadow-md transition-colors sm:w-auto sm:px-4 sm:py-2 sm:text-sm ${
                     isActive
                       ? "bg-red-600 text-white"
                       : "bg-white/95 text-neutral-900 backdrop-blur hover:bg-white"
