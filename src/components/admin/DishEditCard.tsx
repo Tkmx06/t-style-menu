@@ -34,9 +34,11 @@ export function DishEditCard({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const [adjusting, setAdjusting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function handleRotate(direction: "left" | "right") {
     setBusy(true);
+    setError(null);
     try {
       const res = await fetch(dish.image_url);
       const blob = await res.blob();
@@ -53,6 +55,8 @@ export function DishEditCard({
       );
       const file = new File([rotatedBlob], "rotated.jpg", { type: "image/jpeg" });
       await onPhotoChange(dish.id, file);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "回転に失敗しました。");
     } finally {
       setBusy(false);
     }
@@ -170,12 +174,20 @@ export function DishEditCard({
             const file = e.target.files?.[0];
             if (!file) return;
             setBusy(true);
-            await onPhotoChange(dish.id, file);
-            setBusy(false);
-            e.target.value = "";
+            setError(null);
+            try {
+              await onPhotoChange(dish.id, file);
+            } catch (err) {
+              setError(err instanceof Error ? err.message : "写真の変更に失敗しました。");
+            } finally {
+              setBusy(false);
+              e.target.value = "";
+            }
           }}
         />
       </div>
+
+      {error && <p className="text-xs text-red-500">{error}</p>}
 
       {adjusting && (
         <PhotoAdjustPanel
