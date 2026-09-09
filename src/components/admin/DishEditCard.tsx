@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import Image from "next/image";
 import type { Dish } from "@/lib/dish";
 import { dishImageStyle } from "@/lib/dishImageStyle";
+import { resizeImageFile } from "@/lib/resizeImageFile";
 import { PhotoAdjustPanel } from "./PhotoAdjustPanel";
 
 export function DishEditCard({
@@ -53,6 +54,30 @@ export function DishEditCard({
       );
       const file = new File([rotatedBlob], "rotated.jpg", { type: "image/jpeg" });
       await onPhotoChange(dish.id, file);
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "回転に失敗しました。もう一度お試しください。");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  // 2026-09-09: 「iPhoneから画像を追加しようとするとこの画面から進まない」との
+  // 不具合報告への対応。従来はonPhotoChangeの失敗時にsetBusy(false)へ到達できず、
+  // 「処理中…」の表示が消えなくなっていました(詳細はsrc/lib/resizeImageFile.tsの
+  // コメント参照)。try/catch/finallyで必ずbusyを解除し、失敗時はメッセージを
+  // 表示するようにした上で、送信前に写真を縮小してアップロード自体が失敗しにくい
+  // ようにしています。
+  async function handlePhotoInputChange(file: File) {
+    setBusy(true);
+    try {
+      const resized = await resizeImageFile(file);
+      await onPhotoChange(dish.id, resized);
+    } catch (err) {
+      alert(
+        err instanceof Error
+          ? err.message
+          : "写真の変更に失敗しました。もう一度お試しください。",
+      );
     } finally {
       setBusy(false);
     }
@@ -168,11 +193,9 @@ export function DishEditCard({
           onClick={(e) => e.stopPropagation()}
           onChange={async (e) => {
             const file = e.target.files?.[0];
-            if (!file) return;
-            setBusy(true);
-            await onPhotoChange(dish.id, file);
-            setBusy(false);
             e.target.value = "";
+            if (!file) return;
+            await handlePhotoInputChange(file);
           }}
         />
       </div>
