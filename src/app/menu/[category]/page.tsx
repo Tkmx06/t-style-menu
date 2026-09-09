@@ -127,17 +127,24 @@ export default async function CategoryPage(
 
   // Lunch(MENUページのLUNCHボタンから遷移)は、PHOTOページのカテゴリ選択には
   // 含めないため、これまで通りシンプルな見出し+一覧のみのレイアウトです。
+  //
+  // 2026-09-09: 「LUNCHもDINNER(正式メニュー表)と同じ仕様にしたい」との指摘を
+  // 受け、管理画面での写真追加時に料理名の入力を必須にしないよう変更したのに
+  // 合わせて、公開ページ側もDINNERと同じく名前ラベルを表示しないようにしました
+  // (写真そのものが情報であり、個々の料理名を管理する対象ではないため)。
+  const isLunch = category === "lunch";
+
   return (
     <div>
       <h1 className="font-script mb-8 text-center text-5xl text-neutral-800">
         {categoryLabel(category)}
       </h1>
       {dishes.length === 0 ? (
-        <p className="text-neutral-500">まだ料理が登録されていません。</p>
+        <p className="text-neutral-500">まだ写真が登録されていません。</p>
       ) : (
         <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-3">
           {dishes.map((dish) => (
-            <DishCard key={dish.id} dish={dish} />
+            <DishCard key={dish.id} dish={dish} showName={!isLunch} />
           ))}
         </div>
       )}
