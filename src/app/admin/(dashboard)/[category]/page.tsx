@@ -54,17 +54,41 @@ export default function AdminCategoryPage() {
     load();
   }
 
+  // 2026-09-09: 以前はres.json()の失敗(res.okかどうかのチェックより先に実行)や
+  // fetch自体の失敗をここで無視していたため、アップロードが失敗しても呼び出し元
+  // (DishEditCard)には何も伝わらず、「処理中…」の表示だけが残ってしまう不具合が
+  // ありました。エラーを例外としてthrowし、呼び出し元でtry/catch/finallyにより
+  // 必ず処理中表示が解除され、エラーメッセージが表示されるようにしています。
   async function handlePhotoChange(id: string, file: File) {
     const formData = new FormData();
     formData.set("photo", file);
-    const res = await fetch(`/api/admin/dishes/${id}/photo`, {
-      method: "POST",
-      body: formData,
-    });
-    const body = await res.json();
-    if (res.ok) {
-      setDishes((prev) => prev?.map((d) => (d.id === id ? body.dish : d)) ?? prev);
+    let res: Response;
+    try {
+      res = await fetch(`/api/admin/dishes/${id}/photo`, {
+        method: "POST",
+        body: formData,
+      });
+    } catch {
+      throw new Error("通信に失敗しました。電波の良い場所でもう一度お試しください。");
     }
+
+    let body: { dish?: Dish; error?: string };
+    try {
+      body = await res.json();
+    } catch {
+      throw new Error(
+        res.status === 413
+          ? "写真のファイルサイズが大きすぎます。もう一度お試しください。"
+          : "写真の変更に失敗しました。もう一度お試しください。",
+      );
+    }
+
+    if (!res.ok || !body.dish) {
+      throw new Error(body.error ?? "写真の変更に失敗しました。");
+    }
+
+    const updatedDish = body.dish;
+    setDishes((prev) => prev?.map((d) => (d.id === id ? updatedDish : d)) ?? prev);
   }
 
   async function handleFieldSave(id: string, field: "name" | "description", value: string) {
@@ -99,9 +123,19 @@ export default function AdminCategoryPage() {
 
   async function handleAdd(formData: FormData) {
     const res = await fetch("/api/admin/dishes", { method: "POST", body: formData });
-    const body = await res.json();
-    if (!res.ok) throw new Error(body.error);
-    setDishes((prev) => [...(prev ?? []), body.dish]);
+    let body: { dish?: Dish; error?: string };
+    try {
+      body = await res.json();
+    } catch {
+      throw new Error(
+        res.status === 413
+          ? "写真のファイルサイズが大きすぎます。もう一度お試しください。"
+          : "登録に失敗しました。もう一度お試しください。",
+      );
+    }
+    if (!res.ok || !body.dish) throw new Error(body.error ?? "登録に失敗しました。");
+    const newDish = body.dish;
+    setDishes((prev) => [...(prev ?? []), newDish]);
   }
 
   function handleEditFromList(id: string) {
