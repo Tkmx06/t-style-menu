@@ -74,10 +74,15 @@ export default async function CategoryPage(
   // 2026-09-08(続き): 「トリミングなしのまま、上の黒いバーの右端とこの写真の右端を
   // 揃えてほしい」との要望で、MENUページと同じ理由・同じ方法(-mx-4で親のpx-4を
   // 打ち消して画面幅いっぱいに表示、角丸は廃止)で対応しました。
+  //
+  // 2026-09-08(続き): 「PCでは綺麗になったが、iPhoneで見ると写真が右にはみ出す」との
+  // 指摘を受け、MENUページと同じ原因(min-heightとaspect-ratioの組み合わせで、画面が
+  // 狭い時にブラウザが幅の方をmin-height基準で逆算して広げてしまう挙動)だったため、
+  // 同じ対処としてmin-heightを廃止し、常にアスペクト比だけで高さを決めるようにしました。
   if (isPhotoCategory) {
     return (
       <div>
-        <div className="relative -mx-4 mb-10 flex min-h-[300px] aspect-[1599/861] flex-col items-center justify-center gap-6 overflow-hidden px-4 py-10 text-center sm:min-h-0">
+        <div className="relative -mx-4 mb-10 flex aspect-[1599/861] flex-col items-center justify-center gap-6 overflow-hidden px-4 py-10 text-center">
           <Image
             src="/hero-banner.jpg"
             alt=""

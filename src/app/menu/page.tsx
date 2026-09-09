@@ -27,9 +27,20 @@ export const dynamic = "force-static";
 // 左右16pxずつ内側にずれて見えていたことです。-mx-4で親のpx-4を打ち消して写真を
 // 画面幅いっぱいに広げ(角丸も見た目が揃うよう廃止)、ボタン部分は元通りpx-4で
 // 内側に余白を保つようにしています。
+//
+// 2026-09-08(続き): 「PCでは綺麗になったが、iPhoneで見ると写真が右にはみ出す」との
+// 指摘を受けて対応しました。原因はmin-h-[240px](画面が狭い時に写真が短くなりすぎない
+// ようにする下限の高さ)とaspect-[1599/861]の組み合わせです。画面幅が狭く
+// (目安436px未満)、アスペクト比通りの高さがmin-height(240px)を下回る場合、
+// ブラウザはmin-heightを優先して高さを240pxに固定した上で、アスペクト比を保つために
+// 「幅」の方を240px基準で逆算して広げてしまい、その分だけ写真が画面右端から
+// はみ出していました(PCでは画面が広くアスペクト比通りの高さが240pxを超えるため
+// min-heightが効かず、問題が起きていませんでした)。トリミングなし表示を保ったまま
+// はみ出しを防ぐため、min-heightを廃止し、常にアスペクト比だけで高さを決めるように
+// しました(画面が狭い時は写真の高さも比例して低くなりますが、はみ出しよりも優先しています)。
 export default function MenuIndexPage() {
   return (
-    <div className="relative -mx-4 flex min-h-[240px] aspect-[1599/861] flex-col items-center justify-center gap-8 overflow-hidden px-4 py-10 text-center sm:min-h-0">
+    <div className="relative -mx-4 flex aspect-[1599/861] flex-col items-center justify-center gap-8 overflow-hidden px-4 py-10 text-center">
       <Image
         src="/hero-banner.jpg"
         alt="t-style Gerichte"
