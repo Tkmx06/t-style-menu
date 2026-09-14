@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Noto_Sans, Josefin_Sans, Alex_Brush } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 const notoSans = Noto_Sans({
@@ -30,7 +31,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="de"
       className={`${notoSans.variable} ${josefinSans.variable} ${alexBrush.variable} h-full antialiased`}
     >
-      <body className="min-h-full bg-white text-neutral-900">{children}</body>
+      <body className="min-h-full bg-white text-neutral-900">
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
 }
