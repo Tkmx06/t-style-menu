@@ -80,7 +80,7 @@ export default async function Home() {
         scrolling="no"で無効化して、iframe内部が動かないようにしました。
       */}
       <iframe
-        src="https://restaurant-reservation-ebon.vercel.app/reservation"
+        src="https://reservation.t-style-de.com/reservation"
         title="ご予約"
         className="w-full flex-1 border-0"
         style={{ minHeight: "1050px" }}
