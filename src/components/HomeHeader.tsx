@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { TabBar } from "@/components/TabBar";
 
-const RESERVATION_URL = "https://restaurant-reservation-ebon.vercel.app/reservation";
+const RESERVATION_URL = "https://reservation.t-style-de.com/reservation";
 const INSTAGRAM_URL = "https://www.instagram.com/t_style_frankfurt/";
 
 // 2026-09-08: DE/EN/JP言語切り替えボタンを廃止し、右上にInstagramへの
