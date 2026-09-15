@@ -29,6 +29,11 @@ const COLUMN_DURATIONS = [34, 26, 30, 32, 28];
 // かけていた白いグラデーションのオーバーレイを完全に廃止し、元の写真の色を
 // そのまま表示するようにしました。下部キャプションは元々白背景のチップ
 // (bg-white/90)自体で十分読めるため、可読性への影響はありません。
+//
+// 2026-09-15(さらに続き): キャプションの下段「Fotos antippen für mehr
+// Empfehlungen」の案内文を削除し、見出し「Unsere Empfehlung」のみに整理。
+// あわせて見出しのuppercase/字間広げ指定を外し、自然な大文字小文字表記に
+// 変更しました。
 function buildColumns(dishes: Dish[]): Dish[][] {
   const columns: Dish[][] = Array.from({ length: WALL_COLUMNS }, () => []);
   const needed = WALL_COLUMNS * TILES_PER_COLUMN;
@@ -88,11 +93,8 @@ export function PhotoSlideshow({ dishes }: { dishes: Dish[] }) {
 
         <div className="absolute inset-x-0 bottom-3 z-10 flex justify-center px-4 sm:bottom-6">
           <div className="rounded-2xl bg-white/90 px-5 py-2.5 text-center shadow-lg backdrop-blur-sm sm:px-7 sm:py-3">
-            <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-red-600 sm:text-xs">
+            <p className="text-xs font-bold text-red-600 sm:text-sm">
               Unsere Empfehlung
-            </p>
-            <p className="mt-1 text-xs text-neutral-600 sm:text-sm">
-              Fotos antippen für mehr Empfehlungen
             </p>
           </div>
         </div>
