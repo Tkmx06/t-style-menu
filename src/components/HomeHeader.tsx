@@ -27,30 +27,42 @@ const INSTAGRAM_URL = "https://www.instagram.com/t_style_frankfurt/";
 // 一文字ずつバラバラの方向からバウンドして着地→着地の瞬間にキラリーンと
 // きらめくアニメーションを追加しました(複数案の中から「案5」を採用)。
 // 元のロゴ画像(logo.png)は「t・s」マーク・「t・style」の文字部分・
-// 「Japanishes Bistro」のタグライン・「東京」スタンプが1枚に合成された
-// 画像でしたが、文字部分だけを白で塗りつぶして透明ならぬ空白にした
-// logo-base.png を新たに用意し、その上にこのテキストを重ねて表示しています。
-// マーク・タグライン・スタンプ部分は元の画像のまま変更していません。
+// 「Japanishes Bistro」のタグライン・「東京」スタンプが1枚に合成された画像です。
+// 画像ファイル自体は変更せず、代わりに元の「t・style」文字の上にヘッダーの
+// 背景色(白)の板を2枚重ねて隠し、その上に新しいアニメーション文字を重ねています
+// (東京スタンプは右下に重なっているため、板は東京スタンプを避けた2枚の矩形に
+// 分割しています)。
 function LogoWordmark() {
   return (
-    <span
-      className="pointer-events-none absolute left-[25.75%] top-0 flex h-[74.4%] w-[73.16%] items-center justify-center"
-      aria-hidden="true"
-    >
-      <span className="font-logo relative inline-flex items-baseline whitespace-nowrap text-[28px] font-bold tracking-tight text-neutral-900 sm:text-[36px]">
-        <span className="logo-letter logo-letter-0">t</span>
-        <span className="logo-letter logo-letter-1 text-red-600">·</span>
-        <span className="logo-letter logo-letter-2">s</span>
-        <span className="logo-letter logo-letter-3">t</span>
-        <span className="logo-letter logo-letter-4">y</span>
-        <span className="logo-letter logo-letter-5">l</span>
-        <span className="logo-letter logo-letter-6">e</span>
-        <span className="logo-sparkle-sweep">t·style</span>
-        <span className="logo-star logo-star-1">✦</span>
-        <span className="logo-star logo-star-2">✧</span>
-        <span className="logo-star logo-star-3">✦</span>
+    <>
+      {/* 元の「t・style」文字を隠す板(東京スタンプにかからない範囲) */}
+      <span
+        className="pointer-events-none absolute left-[25.43%] top-0 h-[67.58%] w-[74.57%] bg-white"
+        aria-hidden="true"
+      />
+      <span
+        className="pointer-events-none absolute left-[25.43%] top-[66.55%] h-[8.53%] w-[55.09%] bg-white"
+        aria-hidden="true"
+      />
+      <span
+        className="pointer-events-none absolute left-[25.75%] top-0 flex h-[74.4%] w-[73.16%] items-center justify-center"
+        aria-hidden="true"
+      >
+        <span className="font-logo relative inline-flex items-baseline whitespace-nowrap text-[28px] font-bold tracking-tight text-neutral-900 sm:text-[36px]">
+          <span className="logo-letter logo-letter-0">t</span>
+          <span className="logo-letter logo-letter-1 text-red-600">·</span>
+          <span className="logo-letter logo-letter-2">s</span>
+          <span className="logo-letter logo-letter-3">t</span>
+          <span className="logo-letter logo-letter-4">y</span>
+          <span className="logo-letter logo-letter-5">l</span>
+          <span className="logo-letter logo-letter-6">e</span>
+          <span className="logo-sparkle-sweep">t·style</span>
+          <span className="logo-star logo-star-1">✦</span>
+          <span className="logo-star logo-star-2">✧</span>
+          <span className="logo-star logo-star-3">✦</span>
+        </span>
       </span>
-    </span>
+    </>
   );
 }
 
@@ -88,7 +100,7 @@ export function HomeHeader() {
           className="relative inline-block transition-transform duration-300 hover:scale-105 active:scale-105"
         >
           <Image
-            src="/logo-base.png"
+            src="/logo.png"
             alt="t-style Japanisches Bistro"
             width={1561}
             height={586}
