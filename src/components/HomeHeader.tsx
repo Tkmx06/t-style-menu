@@ -54,7 +54,7 @@ export function HomeHeader() {
             width={1561}
             height={586}
             priority
-            className="h-16 w-auto object-contain sm:h-20"
+            className="logo-fade-in h-16 w-auto object-contain transition-transform duration-300 hover:scale-105 sm:h-20"
           />
         </Link>
 
@@ -62,7 +62,7 @@ export function HomeHeader() {
           href={RESERVATION_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2.5 rounded-full bg-red-600 px-6 py-3 text-white shadow-sm transition-colors hover:bg-red-700 sm:px-7 sm:py-3.5"
+          className="reserve-btn-glow inline-flex items-center gap-2.5 rounded-full bg-red-600 px-6 py-3 text-white shadow-sm transition-all duration-300 hover:scale-105 hover:bg-red-700 sm:px-7 sm:py-3.5"
         >
           <svg
             viewBox="0 0 24 24"
