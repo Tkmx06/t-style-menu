@@ -20,8 +20,8 @@ const alexBrush = Alex_Brush({
   subsets: ["latin"],
 });
 
-// 2026-09-15: ã­ã´ã®ãtã»styleãé¨åããã­ã¹ãã¨ãã¦ã¢ãã¡ã¼ã·ã§ã³è¡¨ç¤ºããããã«
-// è¿½å ãã¾ãããåã®ã­ã´ç»åã®æ¸ä½ã«è¿ããä¸¸ã¿ã®ããå¤ªå­ã®ãã©ã³ããé¸ãã§ãã¾ãã
+// 2026-09-15: ロゴの「t・style」部分をテキストとしてアニメーション表示するために
+// 追加しました。元のロゴ画像の書体に近い、丸みのある太字のフォントを選んでいます。
 const baloo2 = Baloo_2({
   variable: "--font-logo",
   weight: ["700"],
@@ -30,7 +30,7 @@ const baloo2 = Baloo_2({
 
 export const metadata: Metadata = {
   title: "t-style | Japanisches Bistro",
-  description: "MenÃ¼ von t-style Japanisches Bistro Frankfurt",
+  description: "Menü von t-style Japanisches Bistro Frankfurt",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
