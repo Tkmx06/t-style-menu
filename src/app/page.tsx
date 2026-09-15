@@ -17,6 +17,16 @@ function shuffle<T>(items: T[]): T[] {
   return result;
 }
 
+// 2026-09-15: 巻き寿司(かっぱ巻き・海老天巻き・カリフォルニアロールなど、
+// 料理名が「maki」で終わる品)はホームのスライドショーには表示しないでほしい
+// との要望を受けました。巻き寿司専用のカテゴリーは無く、他のお寿司・お刺身と
+// 同じ「sushi-sashimi」カテゴリーに含まれているため、カテゴリー単位ではなく
+// 料理名の末尾が「maki」かどうかで判定して除外しています
+// (現状の巻き寿司は全て英語名が「〜maki」で終わる命名になっています)。
+function isMakizushi(dish: Dish): boolean {
+  return dish.name.trim().toLowerCase().endsWith("maki");
+}
+
 async function getSlideshowDishes(): Promise<Dish[]> {
   const supabase = getPublicSupabaseClient();
   // 2026-09-15: スライドショーに表示する写真は、PHOTOタブ配下のカテゴリー
@@ -41,7 +51,9 @@ async function getSlideshowDishes(): Promise<Dish[]> {
     return [];
   }
 
-  return shuffle((data ?? []) as Dish[]);
+  const dishes = ((data ?? []) as Dish[]).filter((dish) => !isMakizushi(dish));
+
+  return shuffle(dishes);
 }
 
 async function getInstagramPostIds(): Promise<string[]> {
