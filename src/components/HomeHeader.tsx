@@ -18,6 +18,10 @@ const INSTAGRAM_URL = "https://www.instagram.com/t_style_frankfurt/";
 // このヘッダーはホーム画面だけでなく、/menu以下の全ページ(src/app/menu/layout.tsx)
 // でも共通で使っており、ロゴ・予約ボタン・Instagramリンク・下の黒いタブバー
 // (HOME/MENU/PHOTO)がどのページでも必ず同じ内容で表示されるようにしています。
+//
+// 2026-09-15: ロゴ・予約ボタンのhover演出(拡大・色変化)は、スマホ等の
+// タッチ端末では発火しない(カーソルが無いため)ため、active:(タップ中)にも
+// 同じ見た目を適用し、タップ操作でも動きが感じられるようにしました。
 export function HomeHeader() {
   return (
     <header className="relative border-b border-neutral-200">
@@ -54,7 +58,7 @@ export function HomeHeader() {
             width={1561}
             height={586}
             priority
-            className="logo-fade-in h-16 w-auto object-contain transition-transform duration-300 hover:scale-105 sm:h-20"
+            className="logo-fade-in h-16 w-auto object-contain transition-transform duration-300 hover:scale-105 active:scale-105 sm:h-20"
           />
         </Link>
 
@@ -62,7 +66,7 @@ export function HomeHeader() {
           href={RESERVATION_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="reserve-btn-glow inline-flex items-center gap-2.5 rounded-full bg-red-600 px-6 py-3 text-white shadow-sm transition-all duration-300 hover:scale-105 hover:bg-red-700 sm:px-7 sm:py-3.5"
+          className="reserve-btn-glow inline-flex items-center gap-2.5 rounded-full bg-red-600 px-6 py-3 text-white shadow-sm transition-all duration-300 hover:scale-105 hover:bg-red-700 active:scale-105 active:bg-red-700 sm:px-7 sm:py-3.5"
         >
           <svg
             viewBox="0 0 24 24"
