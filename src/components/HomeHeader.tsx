@@ -23,49 +23,16 @@ const INSTAGRAM_URL = "https://www.instagram.com/t_style_frankfurt/";
 // タッチ端末では発火しない(カーソルが無いため)ため、active:(タップ中)にも
 // 同じ見た目を適用し、タップ操作でも動きが感じられるようにしました。
 //
-// 2026-09-15(続き): ロゴの「t・style」部分をテキスト化し、ページ読み込み時に
-// 一文字ずつバラバラの方向からバウンドして着地→着地の瞬間にキラリーンと
-// きらめくアニメーションを追加しました(複数案の中から「案5」を採用)。
-// 元のロゴ画像(logo.png)は「t・s」マーク・「t・style」の文字部分・
-// 「Japanishes Bistro」のタグライン・「東京」スタンプが1枚に合成された画像です。
-// 画像ファイル自体は変更せず、代わりに元の「t・style」文字の上にヘッダーの
-// 背景色(白)の板を2枚重ねて隠し、その上に新しいアニメーション文字を重ねています
-// (東京スタンプは右下に重なっているため、板は東京スタンプを避けた2枚の矩形に
-// 分割しています)。
-function LogoWordmark() {
-  return (
-    <>
-      {/* 元の「t・style」文字を隠す板(東京スタンプにかからない範囲) */}
-      <span
-        className="pointer-events-none absolute left-[25.43%] top-0 h-[67.58%] w-[74.57%] bg-white"
-        aria-hidden="true"
-      />
-      <span
-        className="pointer-events-none absolute left-[25.43%] top-[66.55%] h-[8.53%] w-[55.09%] bg-white"
-        aria-hidden="true"
-      />
-      <span
-        className="pointer-events-none absolute left-[25.75%] top-0 flex h-[74.4%] w-[73.16%] items-center justify-center"
-        aria-hidden="true"
-      >
-        <span className="font-logo relative inline-flex items-baseline whitespace-nowrap text-[28px] font-bold tracking-tight text-neutral-900 sm:text-[36px]">
-          <span className="logo-letter logo-letter-0">t</span>
-          <span className="logo-letter logo-letter-1 text-red-600">·</span>
-          <span className="logo-letter logo-letter-2">s</span>
-          <span className="logo-letter logo-letter-3">t</span>
-          <span className="logo-letter logo-letter-4">y</span>
-          <span className="logo-letter logo-letter-5">l</span>
-          <span className="logo-letter logo-letter-6">e</span>
-          <span className="logo-sparkle-sweep">t·style</span>
-          <span className="logo-star logo-star-1">✦</span>
-          <span className="logo-star logo-star-2">✧</span>
-          <span className="logo-star logo-star-3">✦</span>
-        </span>
-      </span>
-    </>
-  );
-}
-
+// 2026-09-15(続き): ロゴの「t・style」部分をテキスト化し、一文字ずつバラバラの
+// 方向からバウンドして着地→着地の瞬間にキラリーンときらめくアニメーションを
+// 一度追加しましたが、「ロゴはもとの画像素材に戻してほしい」とのことで撤回し、
+// 元のロゴ画像(logo.png)をそのまま(マーク・文字・タグライン・東京スタンプの
+// 合成画像を一切加工せず)表示する形に戻しました。
+// 代わりに、ロゴ画像全体に対して「ふわっと弾んで登場→着地の少し後に光が
+// 斜めに一閃してキラリーンと光る」という、文字単位ではなくロゴ全体にかかる
+// 新しいアニメーションを付けています(下の logo-shine-sweep は
+// mix-blend-mode: screen で重ねているため、白地の部分には影響せず、
+// ロゴのインク部分の上を光がすっと通り過ぎるだけに見えます)。
 export function HomeHeader() {
   return (
     <header className="relative border-b border-neutral-200">
@@ -97,7 +64,7 @@ export function HomeHeader() {
       <div className="mx-auto flex max-w-5xl flex-col items-center gap-4 px-4 py-6">
         <Link
           href="/"
-          className="relative inline-block transition-transform duration-300 hover:scale-105 active:scale-105"
+          className="relative inline-block overflow-hidden transition-transform duration-300 hover:scale-105 active:scale-105"
         >
           <Image
             src="/logo.png"
@@ -105,9 +72,9 @@ export function HomeHeader() {
             width={1561}
             height={586}
             priority
-            className="logo-fade-in h-16 w-auto object-contain sm:h-20"
+            className="logo-bounce-in h-16 w-auto object-contain sm:h-20"
           />
-          <LogoWordmark />
+          <span className="logo-shine-sweep" aria-hidden="true" />
         </Link>
 
         <a
