@@ -4,6 +4,7 @@ import { InstagramFeed } from "@/components/InstagramFeed";
 import { HomeFooter } from "@/components/HomeFooter";
 import { getPublicSupabaseClient } from "@/lib/supabase/publicClient";
 import type { Dish } from "@/lib/dish";
+import { PHOTO_CATEGORIES } from "@/lib/categories";
 
 export const dynamic = "force-dynamic";
 
@@ -18,14 +19,20 @@ function shuffle<T>(items: T[]): T[] {
 
 async function getSlideshowDishes(): Promise<Dish[]> {
   const supabase = getPublicSupabaseClient();
-  // スライドショーは「おすすめ」カテゴリーだけでなく、公開中の全メニュー写真を
-  // 対象にランダムな順番で表示します。ただし「menu-pages」(正式なメニュー表PDFの
-  // ページ画像)は料理写真ではないため、2026-09-08から除外しています。
+  // 2026-09-15: スライドショーに表示する写真は、PHOTOタブ配下のカテゴリー
+  // (PHOTO_CATEGORIES = CATEGORIES から「lunch」「menu-pages」を除いたもの)に
+  // 限定しました。「lunch」(MENUタブのLUNCHページ)と「menu-pages」(MENUタブの
+  // 正式なメニュー表PDFページ画像)はMENU側のコンテンツなので、ホームの写真の壁には
+  // 含めません。カテゴリーの追加・変更はlib/categories.tsのPHOTO_CATEGORIESに
+  // 自動追従します。
   const { data, error } = await supabase
     .from("dishes")
     .select("*")
     .eq("status", "published")
-    .neq("category", "menu-pages");
+    .in(
+      "category",
+      PHOTO_CATEGORIES.map((c) => c.slug),
+    );
 
   if (error) {
     // ホームページの表示自体は止めたくないので、失敗時は空配列にする
