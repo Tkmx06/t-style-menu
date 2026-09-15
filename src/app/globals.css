@@ -77,6 +77,44 @@ body {
 /* 2026-09-15(続き): 「予約ボタンのネオンをもう少し強く」との要望を受け、
    波紋(リング)を広く・濃くしたのに加えて、常時ぼんやり光る外側のグローを
    重ねて呼吸するように強弱をつけました。ネオンサインのような発光感を狙っています。 */
+@keyframes reserve-btn-glow {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 0 rgba(220, 38, 38, 0.55),
+      0 0 16px 3px rgba(220, 38, 38, 0.45);
+  }
+  50% {
+    box-shadow:
+      0 0 0 14px rgba(220, 38, 38, 0),
+      0 0 30px 10px rgba(220, 38, 38, 0.7);
+  }
+}
+
+.reserve-btn-glow {
+  animation: reserve-btn-glow 2.2s ease-out infinite;
+}
+
+@keyframes nav-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.nav-fade-in {
+  animation: nav-fade-in 0.6s ease-out 0.15s both;
+}
+
+/* 2026-09-15(続き): ロゴの「t・style」部分をテキスト化してアニメーションを追加
+   (複数案を検討し「案5」= バラバラの方向からバウンドして着地→着地の瞬間に
+   キラリーンときらめく、を採用)。マーク(t・s)・タグライン(Japanishes Bistro)・
+   東京スタンプは元の画像(logo-base.png、この文字部分だけ透明ならぬ白で
+   くり抜いてあります)のまま、その上にこのテキストを重ねて表示しています。 */
 @keyframes logo-letter-bounce-top {
   0% {
     opacity: 0;
