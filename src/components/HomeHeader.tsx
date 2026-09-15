@@ -22,6 +22,38 @@ const INSTAGRAM_URL = "https://www.instagram.com/t_style_frankfurt/";
 // 2026-09-15: ロゴ・予約ボタンのhover演出(拡大・色変化)は、スマホ等の
 // タッチ端末では発火しない(カーソルが無いため)ため、active:(タップ中)にも
 // 同じ見た目を適用し、タップ操作でも動きが感じられるようにしました。
+//
+// 2026-09-15(続き): ロゴの「t・style」部分をテキスト化し、ページ読み込み時に
+// 一文字ずつバラバラの方向からバウンドして着地→着地の瞬間にキラリーンと
+// きらめくアニメーションを追加しました(複数案の中から「案5」を採用)。
+// 元のロゴ画像(logo.png)は「t・s」マーク・「t・style」の文字部分・
+// 「Japanishes Bistro」のタグライン・「東京」スタンプが1枚に合成された
+// 画像でしたが、文字部分だけを白で塗りつぶして透明ならぬ空白にした
+// logo-base.png を新たに用意し、その上にこのテキストを重ねて表示しています。
+// マーク・タグライン・スタンプ部分は元の画像のまま変更していません。
+function LogoWordmark() {
+  return (
+    <span
+      className="pointer-events-none absolute left-[25.75%] top-0 flex h-[74.4%] w-[73.16%] items-center justify-center"
+      aria-hidden="true"
+    >
+      <span className="font-logo relative inline-flex items-baseline whitespace-nowrap text-[28px] font-bold tracking-tight text-neutral-900 sm:text-[36px]">
+        <span className="logo-letter logo-letter-0">t</span>
+        <span className="logo-letter logo-letter-1 text-red-600">·</span>
+        <span className="logo-letter logo-letter-2">s</span>
+        <span className="logo-letter logo-letter-3">t</span>
+        <span className="logo-letter logo-letter-4">y</span>
+        <span className="logo-letter logo-letter-5">l</span>
+        <span className="logo-letter logo-letter-6">e</span>
+        <span className="logo-sparkle-sweep">t·style</span>
+        <span className="logo-star logo-star-1">✦</span>
+        <span className="logo-star logo-star-2">✧</span>
+        <span className="logo-star logo-star-3">✦</span>
+      </span>
+    </span>
+  );
+}
+
 export function HomeHeader() {
   return (
     <header className="relative border-b border-neutral-200">
@@ -51,15 +83,19 @@ export function HomeHeader() {
       </div>
 
       <div className="mx-auto flex max-w-5xl flex-col items-center gap-4 px-4 py-6">
-        <Link href="/" className="inline-block">
+        <Link
+          href="/"
+          className="relative inline-block transition-transform duration-300 hover:scale-105 active:scale-105"
+        >
           <Image
-            src="/logo.png"
+            src="/logo-base.png"
             alt="t-style Japanisches Bistro"
             width={1561}
             height={586}
             priority
-            className="logo-fade-in h-16 w-auto object-contain transition-transform duration-300 hover:scale-105 active:scale-105 sm:h-20"
+            className="logo-fade-in h-16 w-auto object-contain sm:h-20"
           />
+          <LogoWordmark />
         </Link>
 
         <a
