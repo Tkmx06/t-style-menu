@@ -110,25 +110,20 @@ body {
   animation: logo-shine-sweep 0.9s ease-in-out 0.75s both;
 }
 
-/* 2026-09-15(続き): 「予約ボタンのネオンをもう少し強く」との要望を受け、
-   波紋(リング)を広く・濃くしたのに加えて、常時ぼんやり光る外側のグローを
-   重ねて呼吸するように強弱をつけました。ネオンサインのような発光感を狙っています。 */
+/* 2026-09-15(さらに続き): ネオンが強すぎるとのことで、外側の常時グローを廃止し
+   リングの濃さ・広がりとアニメーション速度を一つ前のバージョンに戻しました。 */
 @keyframes reserve-btn-glow {
   0%,
   100% {
-    box-shadow:
-      0 0 0 0 rgba(220, 38, 38, 0.55),
-      0 0 16px 3px rgba(220, 38, 38, 0.45);
+    box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.35);
   }
   50% {
-    box-shadow:
-      0 0 0 14px rgba(220, 38, 38, 0),
-      0 0 30px 10px rgba(220, 38, 38, 0.7);
+    box-shadow: 0 0 0 8px rgba(220, 38, 38, 0);
   }
 }
 
 .reserve-btn-glow {
-  animation: reserve-btn-glow 2.2s ease-out infinite;
+  animation: reserve-btn-glow 2.6s ease-out infinite;
 }
 
 @keyframes nav-fade-in {
