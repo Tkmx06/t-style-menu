@@ -19,6 +19,11 @@ const COLUMN_DURATIONS = [34, 26, 30, 32, 28];
 // 入っているカテゴリーの写真のみをランダム抽出。MENUタブ側=lunch/menu-pages
 // は含まない)や、コンポーネントのprops("dishes"のみ)は変更していません。
 // 呼び出し側(page.tsx)の変更は不要です。
+//
+// 2026-09-15(続き): 写真の色が薄く見えるとの指摘を受け、白のグラデーション
+// オーバーレイの不透明度を下げ、写真がより鮮やかに見えるようにしました。
+// またキャプションの案内文言を、サイトの基本言語であるドイツ語に統一しました
+// (見出し「Unsere Empfehlung」は元々ドイツ語)。
 function buildColumns(dishes: Dish[]): Dish[][] {
   const columns: Dish[][] = Array.from({ length: WALL_COLUMNS }, () => []);
   const needed = WALL_COLUMNS * TILES_PER_COLUMN;
@@ -76,7 +81,7 @@ export function PhotoSlideshow({ dishes }: { dishes: Dish[] }) {
           ))}
         </div>
 
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/85 via-white/10 to-white/90" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/25 via-white/0 to-white/35" />
 
         <div className="absolute inset-x-0 bottom-3 z-10 flex justify-center px-4 sm:bottom-6">
           <div className="rounded-2xl bg-white/90 px-5 py-2.5 text-center shadow-lg backdrop-blur-sm sm:px-7 sm:py-3">
@@ -84,7 +89,7 @@ export function PhotoSlideshow({ dishes }: { dishes: Dish[] }) {
               Unsere Empfehlung
             </p>
             <p className="mt-1 text-xs text-neutral-600 sm:text-sm">
-              写真をタップして、おすすめ一覧へ
+              Fotos antippen für mehr Empfehlungen
             </p>
           </div>
         </div>
