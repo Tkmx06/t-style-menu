@@ -6,7 +6,16 @@ import { getPublicSupabaseClient } from "@/lib/supabase/publicClient";
 import type { Dish } from "@/lib/dish";
 import { PHOTO_CATEGORIES } from "@/lib/categories";
 
-export const dynamic = "force-dynamic";
+// 2026-09-16: 「PHOTOタブ/『Unsere Empfehlung』ボタンを押しても反応がない」との
+// 報告を調査した結果、force-dynamic(アクセスのたびに毎回Supabaseへ問い合わせる)
+// になっていたことが原因の一端と判明。ホームページ自体に加え、上部タブバーや
+// 写真の壁からのリンク遷移先(/menu/empfehlung)への遷移時にも同時にSupabaseへの
+// 問い合わせが複数走り、Vercel(Hobbyプラン)のサーバー関数が混雑して503エラーに
+// なることがあった。revalidate(30秒キャッシュ)に変更し、同時リクエストの大半を
+// キャッシュから返すようにして混雑を減らす。管理画面での編集が公開側に反映される
+// までに最大30秒程度のタイムラグが生じるようになったが、頻繁に更新する運用では
+// ないため許容範囲と判断。
+export const revalidate = 30;
 
 function shuffle<T>(items: T[]): T[] {
   const result = [...items];
