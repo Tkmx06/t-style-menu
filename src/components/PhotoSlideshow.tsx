@@ -24,6 +24,11 @@ const COLUMN_DURATIONS = [34, 26, 30, 32, 28];
 // オーバーレイの不透明度を下げ、写真がより鮮やかに見えるようにしました。
 // またキャプションの案内文言を、サイトの基本言語であるドイツ語に統一しました
 // (見出し「Unsere Empfehlung」は元々ドイツ語)。
+//
+// 2026-09-15(さらに続き): それでもまだ色が薄く見えるとのことで、写真全体に
+// かけていた白いグラデーションのオーバーレイを完全に廃止し、元の写真の色を
+// そのまま表示するようにしました。下部キャプションは元々白背景のチップ
+// (bg-white/90)自体で十分読めるため、可読性への影響はありません。
 function buildColumns(dishes: Dish[]): Dish[][] {
   const columns: Dish[][] = Array.from({ length: WALL_COLUMNS }, () => []);
   const needed = WALL_COLUMNS * TILES_PER_COLUMN;
@@ -80,8 +85,6 @@ export function PhotoSlideshow({ dishes }: { dishes: Dish[] }) {
             </div>
           ))}
         </div>
-
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/25 via-white/0 to-white/35" />
 
         <div className="absolute inset-x-0 bottom-3 z-10 flex justify-center px-4 sm:bottom-6">
           <div className="rounded-2xl bg-white/90 px-5 py-2.5 text-center shadow-lg backdrop-blur-sm sm:px-7 sm:py-3">
