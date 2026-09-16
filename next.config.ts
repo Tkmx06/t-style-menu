@@ -22,6 +22,13 @@ const nextConfig: NextConfig = {
         pathname: "/storage/v1/object/public/**",
       },
     ],
+    // サイト内で実際に使われている表示幅(64px管理サムネイル、400px前後の
+    // カード/編集画面、最大1024pxのメニューページ、スライドショーの~20-33vw)
+    // に絞り込み、Next.jsデフォルト(640〜3840pxの8段階)による無駄な
+    // バリアント生成を防ぐ。
+    deviceSizes: [400, 640, 750, 1024, 1080],
+    imageSizes: [64, 256],
+    qualities: [75],
   },
 };
 
