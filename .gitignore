@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# ローカルの作業出力(スクリーンショット等)
+/Claude outputs/
