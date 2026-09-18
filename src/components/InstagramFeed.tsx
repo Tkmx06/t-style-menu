@@ -29,10 +29,59 @@ declare global {
 //
 // FALLBACK_POSTSは、設定が未保存/取得エラー時のための最後の保険です。
 // 2026-09-08: 表示順(上下/左右)を入れ替えてほしいとの要望で並び順を変更しました。
+//
+// 2026-09-18: 投稿を2件並べると、片方(常に1件目)の高さだけ潰れて
+// 見えなくなる不具合が判明。原因はInstagram公式embed.js側で、複数の
+// 投稿を処理した際にリサイズ用iframeのid("instagram-embed-N")の
+// 割り当てや高さ反映がずれること。embed.js自身の内部処理に依存せず、
+// 各投稿のiframeが自分自身で送ってくる高さ通知(postMessage)を
+// event.source(送信元iframeそのもの)で確実に紐付けて、こちら側で
+// 直接高さを反映するようにして回避しています。
 const FALLBACK_POSTS = ["Dc0IKxsAeJS", "DMSg-YPIQQX"];
+
+function isInstagramMeasureMessage(
+  data: unknown,
+): data is { type: string; details: { height: number } } {
+  if (!data || typeof data !== "object") return false;
+  const value = data as { type?: unknown; details?: { height?: unknown } };
+  return value.type === "MEASURE" && typeof value.details?.height === "number";
+}
 
 export function InstagramFeed({ postIds }: { postIds?: string[] }) {
   const posts = postIds && postIds.length > 0 ? postIds : FALLBACK_POSTS;
+
+  useEffect(() => {
+    // Instagram公式iframeが読み込み完了時に送ってくる高さ通知を、
+    // 送信元iframe(event.source)で直接特定して自前で反映する。
+    const handleMessage = (event: MessageEvent) => {
+      if (event.origin !== "https://www.instagram.com") return;
+
+      let data: unknown = event.data;
+      if (typeof data === "string") {
+        try {
+          data = JSON.parse(data);
+        } catch {
+          return;
+        }
+      }
+      if (!isInstagramMeasureMessage(data)) return;
+
+      const iframes = document.querySelectorAll<HTMLIFrameElement>(
+        "iframe.instagram-media",
+      );
+      const target = Array.from(iframes).find(
+        (iframe) => iframe.contentWindow === event.source,
+      );
+      if (!target) return;
+
+      const height = `${data.details.height}px`;
+      target.style.height = height;
+      target.setAttribute("height", String(data.details.height));
+    };
+
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, []);
 
   // ページ遷移(クライアントサイドナビゲーション)で再訪した際、
   // embed.js は既に読み込み済みでonLoadが発火しないことがあるため、
